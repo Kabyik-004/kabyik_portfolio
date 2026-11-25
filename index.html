@@ -1,0 +1,1246 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kabyik Paul</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Kabyik Paul: CSE student in IoT and Cybersecurity building edge AI, sensor networks and back-end systems.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: a "signal monitor" home with switchable channels, then hash-routed pages joined by a pixel-sweep transition. Dark-only by design. */
+:root {
+  --bg: #060607;
+  --panel: #0d0d10;
+  --ink: #ecebe4;
+  --body: #cfcec7;
+  --dim: #8d8c86;
+  --faint: #4a4a48;
+  --line: rgba(236, 235, 228, 0.1);
+  --ember: #ff6b1a;
+  --ember-soft: rgba(255, 107, 26, 0.14);
+  --cyan: #5fd4ff;
+  --f-pixel: "Silkscreen", "Courier New", monospace;
+  --f-mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+  --f-sans: "IBM Plex Sans", system-ui, "Segoe UI", sans-serif;
+  --head-h: 64px;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--f-sans); font-size: 16px; line-height: 1.6; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+a { color: inherit; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--ember); outline-offset: 3px; }
+::selection { background: var(--ember); color: #000; }
+.wrap { width: 100%; max-width: 1240px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+@media (min-width: 720px) { .wrap { padding-left: max(32px, env(safe-area-inset-left, 0px)); padding-right: max(32px, env(safe-area-inset-right, 0px)); } }
+
+/* ---------- boot ---------- */
+.boot { position: fixed; inset: 0; z-index: 70; background: var(--bg); display: flex; flex-direction: column; justify-content: flex-end;
+  padding: 0 max(24px, env(safe-area-inset-right, 0px)) calc(40px + env(safe-area-inset-bottom, 0px)) max(24px, env(safe-area-inset-left, 0px));
+  animation: boot-out .4s ease 3.4s forwards; }
+.boot.done { opacity: 0; visibility: hidden; transition: opacity .45s ease, visibility 0s .45s; }
+@keyframes boot-out { to { opacity: 0; visibility: hidden; } }
+.boot-top { position: absolute; top: calc(20px + env(safe-area-inset-top, 0px)); left: max(24px, env(safe-area-inset-left, 0px)); font: 400 12px/1 var(--f-pixel); letter-spacing: .12em; display: flex; gap: 10px; align-items: center; }
+.boot-top i { width: 8px; height: 8px; background: var(--ember); display: inline-block; }
+.boot-stat { position: absolute; top: calc(22vh + env(safe-area-inset-top, 0px)); right: max(24px, env(safe-area-inset-right, 0px)); width: min(360px, calc(100% - 48px)); display: grid; gap: 4px; font: 400 11px/1.5 var(--f-mono); letter-spacing: .06em; text-transform: uppercase; }
+.boot-stat div { display: flex; justify-content: space-between; gap: 16px; color: var(--dim); white-space: nowrap; animation: btin .18s steps(3) both; }
+.boot-stat div b { font-weight: 400; color: var(--ember); }
+@keyframes btin { from { opacity: 0; transform: translateX(-6px); } }
+.boot-num { font: 700 clamp(88px, 22vw, 220px)/.85 var(--f-pixel); letter-spacing: -.02em; display: flex; align-items: flex-start; gap: 8px;
+  background: repeating-linear-gradient(to bottom, var(--ink) 0 3px, transparent 3px 5px); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.boot-num sup { font-size: .2em; color: var(--ember); -webkit-text-fill-color: var(--ember); margin-top: .3em; }
+.boot-bar { display: grid; grid-template-columns: repeat(24, 1fr); gap: 3px; margin-top: 22px; max-width: 640px; }
+.boot-bar span { height: 10px; background: #1b1b1d; }
+.boot-bar span.on { background: var(--ink); }
+@media (prefers-reduced-motion: reduce) { .boot { display: none; } }
+
+/* ---------- transition layers ---------- */
+#px { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 60; pointer-events: none; }
+#wipe { position: fixed; left: 0; right: 0; top: 0; height: 2px; background: var(--ember); z-index: 61; pointer-events: none; opacity: 0; }
+#wipe.go { animation: wipe .5s cubic-bezier(.5, 0, .2, 1); }
+@keyframes wipe { 0% { opacity: 1; transform: translateY(0); } 90% { opacity: 1; } 100% { opacity: 0; transform: translateY(100vh); } }
+
+/* ---------- header ---------- */
+.top { position: fixed; top: 0; left: 0; right: 0; z-index: 40; padding-top: calc(14px + env(safe-area-inset-top, 0px)); pointer-events: none; }
+body:not([data-route="home"]) .top { background: linear-gradient(var(--bg) 70%, rgba(6,6,7,0)); padding-bottom: 10px; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 41; background: var(--bg); }
+.top .wrap { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.brand, .chan, .nav, .menu-btn { pointer-events: auto; }
+.brand { white-space: nowrap; display: flex; align-items: center; gap: 10px; text-decoration: none; font: 400 13px/1 var(--f-pixel); letter-spacing: .14em; background: rgba(6,6,7,.72); padding: 8px 10px; border: 1px solid var(--line); }
+.brand .led { width: 18px; height: 10px; border: 1px solid var(--ink); position: relative; }
+.brand .led::after { content: ""; position: absolute; inset: 2px 8px 2px 2px; background: var(--ember); animation: blink 1.6s steps(1) infinite; }
+@keyframes blink { 50% { opacity: .25; } }
+.chan { display: flex; align-items: stretch; border: 1px solid var(--line); background: rgba(6,6,7,.72); }
+.chan-label { font: 400 12px/1 var(--f-pixel); letter-spacing: .12em; padding: 9px 12px; display: flex; align-items: center; gap: 8px; min-width: 15ch; white-space: nowrap; }
+.chan-label b { color: var(--ember); font-weight: 400; }
+.chan button { all: unset; cursor: pointer; padding: 0 11px; border-left: 1px solid var(--line); font: 400 11px/1 var(--f-mono); display: flex; align-items: center; color: var(--ink); }
+.chan button:hover { background: var(--ink); color: var(--bg); }
+.chan button:focus-visible { outline: 2px solid var(--ember); outline-offset: -2px; }
+.nav { display: flex; gap: clamp(14px, 2.4vw, 30px); }
+.nav a { text-decoration: none; display: flex; align-items: baseline; gap: 7px; font: 400 12px/1 var(--f-mono); letter-spacing: .14em; text-transform: uppercase; color: var(--dim); padding: 6px 0; }
+.nav a b { font: 700 14px/1 var(--f-pixel); color: var(--ink); }
+.nav a:hover, .nav a.on { color: var(--ink); }
+.nav a.on b, .nav a.on { color: var(--ember); }
+.menu-btn { display: none; align-items: center; gap: 8px; border: 1px solid var(--line); background: rgba(6,6,7,.8); padding: 8px 10px; font: 400 12px/1 var(--f-pixel); letter-spacing: .12em; cursor: pointer; }
+body[data-route="home"] .nav, body[data-route="home"] .menu-btn { display: none; }
+body:not([data-route="home"]) .chan { display: none; }
+@media (max-width: 760px) {
+  .nav { display: none; }
+  body:not([data-route="home"]) .menu-btn { display: flex; }
+  .chan-label { min-width: 0; }
+  .chan-label .cn { display: none; }
+}
+.menu { position: fixed; inset: 0; z-index: 50; background: var(--bg); padding: calc(84px + env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) calc(24px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); display: flex; flex-direction: column; gap: 6px; }
+.menu a { text-decoration: none; display: flex; gap: 16px; align-items: baseline; padding: 14px 0; border-bottom: 1px solid var(--line); font: 700 clamp(26px, 8vw, 40px)/1 var(--f-pixel); }
+.menu a span { font: 400 13px/1 var(--f-mono); color: var(--dim); width: 2.2em; }
+.menu a.on { color: var(--ember); }
+.menu p { margin-top: auto; font: 400 13px/1.5 var(--f-mono); color: var(--dim); }
+
+/* ---------- pages ---------- */
+.page { min-height: 100vh; }
+.pg { padding-top: calc(var(--head-h) + 44px + env(safe-area-inset-top, 0px)); padding-bottom: 48px; }
+.pg-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px 48px; padding-bottom: 18px; border-bottom: 1px solid var(--ink); }
+.ptitle { font: 700 clamp(38px, 8vw, 112px)/.9 var(--f-pixel); max-width: 100%; margin: 0; letter-spacing: .01em; white-space: nowrap; }
+.ptitle .cur { display: inline-block; width: .55em; height: .72em; background: var(--ember); vertical-align: baseline; margin-left: .06em; animation: blink .7s steps(1) infinite; }
+.pg-lede { margin: 0 0 .4em; max-width: 40ch; font: 400 14px/1.65 var(--f-mono); color: var(--dim); }
+@media (max-width: 760px) { .ptitle { white-space: normal; overflow-wrap: anywhere; } }
+.kit { display: grid; gap: 8px; padding: 18px 0 8px; font: 400 12.5px/1.7 var(--f-mono); }
+.kit p { margin: 0; }
+.kit em { font-style: normal; color: var(--ember); letter-spacing: .12em; margin-right: 8px; text-transform: uppercase; }
+.kit i { font-style: normal; color: var(--faint); }
+.pfoot { margin-top: 72px; padding-top: 18px; border-top: 1px solid var(--line); display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; font: 400 12px/1.6 var(--f-mono); color: var(--dim); }
+.pfoot a { color: var(--ink); text-decoration: none; }
+.pfoot a:hover { color: var(--ember); }
+
+/* ---------- home ---------- */
+.hero { position: relative; height: 100vh; min-height: 560px; display: flex; flex-direction: column; justify-content: flex-end; overflow: hidden; touch-action: pan-y; isolation: isolate; }
+@supports (height: 100svh) { .hero { height: 100svh; } }
+#field, #wire { position: absolute; inset: 0; width: 100%; height: 100%; z-index: -2; display: block; }
+#field { background: radial-gradient(ellipse at 70% 40%, #4a1608 0%, #1a0710 40%, var(--bg) 75%); }
+#wire { background: var(--bg); }
+#wire[hidden], #field[hidden] { display: none; }
+.hero::after { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background: linear-gradient(to right, rgba(6,6,7,.86) 0%, rgba(6,6,7,.5) 45%, rgba(6,6,7,0) 70%), linear-gradient(to top, rgba(6,6,7,.9) 0%, rgba(6,6,7,0) 38%); }
+.hero-body { padding-bottom: 18px; }
+.eyebrow { font: 500 12px/1.4 var(--f-mono); letter-spacing: .14em; text-transform: uppercase; color: var(--dim); display: flex; gap: 10px; align-items: center; margin: 0 0 18px; }
+.eyebrow .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--cyan); }
+h1.thesis { font: 700 clamp(30px, 5.4vw, 62px)/1.08 var(--f-pixel); letter-spacing: .02em; margin: 0; max-width: 15ch; text-shadow: -2px 0 rgba(255, 60, 40, .55), 2px 0 rgba(60, 200, 255, .5); text-wrap: balance; }
+h1.thesis { position: relative; }
+h1.thesis .w { color: rgba(236,235,228,.42); transition: color .35s; }
+h1.thesis .w.on { color: var(--ink); }
+h1.thesis .uline { position: absolute; left: 0; top: 0; height: .09em; width: 0; background: var(--ember); transition: transform .55s cubic-bezier(.6,0,.2,1), width .55s cubic-bezier(.6,0,.2,1); }
+h1.thesis.glitch { animation: glitch .34s steps(4); }
+@keyframes glitch { 0% { transform: none; } 25% { transform: translate(-4px, 1px); text-shadow: -7px 0 rgba(255,60,40,.85), 7px 0 rgba(60,200,255,.85); } 50% { transform: translate(4px, -1px); } 75% { transform: translate(-2px, 0); } 100% { transform: none; } }
+#static { position: absolute; inset: 0; width: 100%; height: 100%; z-index: -1; image-rendering: pixelated; pointer-events: none; }
+.cue { display: flex; align-items: center; gap: 10px; }
+.cue .pips { display: flex; gap: 4px; }
+.cue .pips i { width: 14px; height: 4px; background: var(--faint); }
+.cue .pips i.on { background: var(--ember); }
+.boot.gone { display: none; }
+.intro { font: 400 15px/1.75 var(--f-mono); max-width: 52ch; margin: 22px 0 0; color: #d6d5ce; }
+.intro strong { color: var(--ink); font-weight: 500; }
+.channels { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin-top: clamp(28px, 6vh, 64px); border-top: 1px solid var(--line); }
+.channels a { text-decoration: none; padding: 18px 14px 18px 0; display: flex; flex-direction: column; gap: 6px; }
+.channels a + a { padding-left: 14px; border-left: 1px solid var(--line); }
+.channels .n { font: 700 clamp(34px, 5vw, 58px)/1 var(--f-pixel); transition: color .2s, transform .2s; }
+.channels .l { font: 500 11px/1.3 var(--f-mono); letter-spacing: .16em; text-transform: uppercase; color: var(--dim); }
+.channels a:hover .n, .channels a:focus-visible .n { color: var(--ember); transform: translateX(4px); }
+.channels a:hover .l { color: var(--ink); }
+.telemetry { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; padding: 12px 0 calc(14px + env(safe-area-inset-bottom, 0px)); border-top: 1px solid var(--line); font: 400 11px/1.4 var(--f-mono); color: var(--dim); font-variant-numeric: tabular-nums; }
+.telemetry .vals { display: flex; flex-wrap: wrap; gap: 6px 18px; }
+.telemetry b { color: var(--ink); font-weight: 400; }
+.telemetry .hint { color: var(--ink); letter-spacing: .04em; }
+@media (max-width: 720px) {
+  .channels { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .channels a:nth-child(3) { padding-left: 0; border-left: 0; }
+  .channels a:nth-child(n+3) { border-top: 1px solid var(--line); }
+  .hero::after { background: linear-gradient(to top, rgba(6,6,7,.94) 0%, rgba(6,6,7,.55) 55%, rgba(6,6,7,.25) 100%); }
+  .intro { font-size: 14px; }
+}
+@media (max-height: 700px) and (min-width: 721px) { .intro { display: none; } }
+
+/* ---------- projects list ---------- */
+.rows { list-style: none; margin: 28px 0 0; padding: 0; border-top: 1px solid var(--line); }
+.row { display: grid; grid-template-columns: 56px minmax(0, 1fr) auto auto; align-items: center; gap: 8px 24px; padding: 14px 0; border-bottom: 1px solid var(--line); text-decoration: none; }
+.r-n { font: 400 13px/1 var(--f-mono); color: var(--dim); }
+.r-name { font: 700 clamp(26px, 4.6vw, 56px)/1.05 var(--f-pixel); letter-spacing: .02em; transition: transform .25s cubic-bezier(.3,.7,.2,1), color .2s; overflow-wrap: anywhere; }
+.r-meta { font: 400 12.5px/1.4 var(--f-mono); color: var(--body); text-align: right; }
+.r-view { font: 500 11px/1 var(--f-mono); letter-spacing: .18em; color: var(--dim); white-space: nowrap; }
+.row:hover .r-name, .row:focus-visible .r-name { transform: translateX(14px); }
+.row:hover .r-view, .row:focus-visible .r-view { color: var(--ember); }
+.row:hover .r-n { color: var(--ember); }
+@media (max-width: 760px) { .row { grid-template-columns: 34px minmax(0, 1fr) auto; } .r-meta { grid-column: 2 / -1; text-align: left; grid-row: 2; } }
+
+.peek { position: fixed; left: 0; top: 0; z-index: 30; width: 260px; height: 168px; pointer-events: none; opacity: 0; transition: opacity .15s; }
+.peek.vis { opacity: 1; }
+.pk { position: absolute; inset: 0; background: var(--bg); border: 1px solid var(--ink); clip-path: inset(0 100% 100% 0); overflow: hidden; }
+.peek.on .pk { animation: region .42s steps(6) forwards; }
+@keyframes region { to { clip-path: inset(0); } }
+.pk-dot { position: absolute; top: 8px; left: 8px; width: 6px; height: 6px; background: var(--ember); z-index: 2; animation: blink 1s steps(1) infinite; }
+.pk-cap { position: absolute; bottom: 6px; left: 8px; right: 8px; z-index: 2; font: 400 10px/1.2 var(--f-mono); letter-spacing: .12em; color: var(--dim); text-transform: uppercase; display: flex; justify-content: space-between; }
+@media (hover: none) { .peek { display: none; } }
+/* peek visuals */
+.pv { position: absolute; inset: 0; }
+.pv-fire { background: radial-gradient(circle at 58% 62%, #fff4c8 0 6%, #ffc23a 12%, #ff5a12 24%, #a8124a 40%, #2a0638 58%, #060607 76%); }
+.pv-fire::after { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(transparent 0 2px, rgba(0,0,0,.35) 2px 3px); }
+.pv-fire .bb { position: absolute; left: 38%; top: 30%; width: 40%; height: 52%; border: 1.5px solid var(--cyan); }
+.pv-fire .bb span { position: absolute; top: -17px; left: -1.5px; background: var(--cyan); color: #000; font: 500 10px/1 var(--f-mono); padding: 3px 5px; letter-spacing: .08em; }
+.pv-radio i { position: absolute; left: 50%; top: 50%; width: 30px; height: 30px; margin: -15px 0 0 -15px; border: 1.5px solid var(--ink); border-radius: 50%; animation: ring 1.8s linear infinite; opacity: 0; }
+.pv-radio i:nth-child(2) { animation-delay: .6s; } .pv-radio i:nth-child(3) { animation-delay: 1.2s; }
+.pv-radio b { position: absolute; left: 50%; top: 50%; width: 6px; height: 34px; margin: -30px 0 0 -3px; background: var(--ember); }
+@keyframes ring { 0% { transform: scale(.4); opacity: 1; } 100% { transform: scale(5); opacity: 0; } }
+.pv-bars { display: flex; align-items: flex-end; gap: 8px; padding: 28px 22px 30px; }
+.pv-bars i { flex: 1; height: var(--h); background: var(--ink); }
+.pv-bars i:nth-child(4) { background: var(--ember); }
+.pv-mods { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 30px 14px; align-items: stretch; }
+.pv-mods span { border: 1px solid var(--faint); display: grid; place-items: center; font: 400 10px/1.2 var(--f-pixel); text-align: center; padding: 6px; }
+.pv-mods span:first-child { border-color: var(--ember); color: var(--ember); }
+.pv-code { padding: 28px 18px; display: grid; gap: 7px; align-content: start; }
+.pv-code i { height: 6px; background: var(--faint); width: var(--w); margin-left: var(--x, 0); }
+.pv-code i.k { background: var(--cyan); }
+.pv-code i.e { background: var(--ember); width: 8px; animation: blink .8s steps(1) infinite; }
+
+/* ---------- project detail ---------- */
+.crumbs { display: flex; justify-content: space-between; gap: 16px; font: 400 12px/1 var(--f-mono); letter-spacing: .14em; text-transform: uppercase; color: var(--dim); margin-bottom: 26px; }
+.crumbs a { text-decoration: none; }
+.crumbs a:hover { color: var(--ember); }
+.d-title { display: flex; align-items: flex-end; gap: 18px; flex-wrap: wrap; }
+.d-n { font: 400 15px/1 var(--f-mono); color: var(--ember); padding-bottom: .5em; }
+.d-title .ptitle { font-size: clamp(36px, 7vw, 92px); white-space: normal; overflow-wrap: anywhere; }
+.d-sub { margin: 14px 0 0; font: 400 15px/1.5 var(--f-mono); color: var(--dim); }
+.d-meta { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 26px 0 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.d-meta div { padding: 14px 16px 14px 0; min-width: 0; }
+.d-meta div + div { padding-left: 16px; border-left: 1px solid var(--line); }
+.d-meta dt { font: 400 11px/1.3 var(--f-mono); letter-spacing: .14em; text-transform: uppercase; color: var(--dim); }
+.d-meta dd { margin: 6px 0 0; font: 400 13.5px/1.55 var(--f-mono); }
+@media (max-width: 720px) { .d-meta { grid-template-columns: minmax(0, 1fr); } .d-meta div + div { padding-left: 0; border-left: 0; border-top: 1px solid var(--line); } }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 18px; }
+.tag { display: inline-block; font: 500 11px/1 var(--f-mono); letter-spacing: .1em; text-transform: uppercase; padding: 6px 8px; border: 1px solid var(--line); color: var(--dim); }
+.tag.hot { color: var(--ember); border-color: rgba(255,107,26,.45); background: var(--ember-soft); }
+.tag.ok { color: var(--cyan); border-color: rgba(95,212,255,.4); }
+.d-visual { margin-top: 32px; }
+.d-body { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 32px 56px; margin-top: 36px; }
+@media (max-width: 860px) { .d-body { grid-template-columns: minmax(0, 1fr); } }
+.d-text p { margin: 0 0 18px; color: var(--body); max-width: 62ch; font-size: 17px; }
+.d-text ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; max-width: 62ch; }
+.d-text li { padding-left: 22px; position: relative; color: var(--body); }
+.d-text li::before { content: "›"; position: absolute; left: 4px; color: var(--ember); font-family: var(--f-mono); }
+.d-side { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+.specs { display: grid; grid-template-columns: minmax(0, 1fr); border-top: 1px solid var(--line); margin: 0; }
+.specs div { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 12px; padding: 11px 0; border-bottom: 1px solid var(--line); }
+.specs dt { font: 400 11px/1.5 var(--f-mono); letter-spacing: .14em; text-transform: uppercase; color: var(--dim); }
+.specs dd { margin: 0; font: 400 13.5px/1.5 var(--f-mono); }
+.links { display: flex; flex-wrap: wrap; gap: 10px; }
+.btn { display: inline-flex; align-items: center; gap: 8px; text-decoration: none; font: 500 12px/1 var(--f-mono); letter-spacing: .08em; text-transform: uppercase; padding: 12px 14px; border: 1px solid var(--ink); transition: background .15s, color .15s; background: none; color: var(--ink); cursor: pointer; }
+.btn:hover { background: var(--ink); color: var(--bg); }
+.btn.ghost { border-color: var(--line); color: var(--dim); }
+.btn.ghost:hover { border-color: var(--ink); color: var(--bg); background: var(--ink); }
+.d-next { display: grid; grid-template-columns: 1fr 1fr; margin-top: 64px; border-top: 1px solid var(--ink); }
+.d-next a { text-decoration: none; padding: 18px 0; display: flex; flex-direction: column; gap: 6px; }
+.d-next a + a { text-align: right; align-items: flex-end; border-left: 1px solid var(--line); padding-left: 16px; }
+.d-next small { font: 400 11px/1 var(--f-mono); letter-spacing: .16em; color: var(--dim); text-transform: uppercase; }
+.d-next span { font: 700 clamp(18px, 3vw, 30px)/1.1 var(--f-pixel); transition: color .2s; }
+.d-next a:hover span { color: var(--ember); }
+.diagram { overflow-x: auto; border: 1px solid var(--line); background: var(--panel); }
+.diagram svg { display: block; min-width: 640px; width: 100%; height: auto; }
+.diagram .box { fill: var(--bg); stroke: var(--faint); }
+.diagram .box.key { stroke: var(--ember); }
+.diagram .t { fill: var(--ink); font: 400 11px var(--f-pixel); letter-spacing: .06em; }
+.diagram .s { fill: var(--dim); font: 400 10.5px var(--f-mono); }
+.diagram .wire { stroke: var(--faint); stroke-width: 1.5; fill: none; }
+.flowline { stroke: var(--ember); stroke-width: 2; fill: none; stroke-dasharray: 6 14; animation: flow 1.2s linear infinite; }
+.flowline.c { stroke: var(--cyan); }
+@keyframes flow { to { stroke-dashoffset: -20; } }
+.path-line { font: 400 12.5px/1.8 var(--f-mono); color: var(--dim); padding: 14px 16px; border: 1px solid var(--line); background: var(--panel); overflow-x: auto; white-space: nowrap; }
+.path-line b { color: var(--ink); font-weight: 500; }
+.path-line em { font-style: normal; color: var(--cyan); }
+
+/* ---------- achievements ---------- */
+.awards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0; margin-top: 28px; border-top: 1px solid var(--line); border-left: 1px solid var(--line); }
+.aw { position: relative; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 22px 22px 26px; display: flex; flex-direction: column; gap: 14px; min-height: 300px; overflow: hidden; text-decoration: none; }
+.aw::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: repeating-linear-gradient(transparent 0 2px, rgba(236,235,228,.05) 2px 3px); opacity: 0; transition: opacity .2s; }
+.aw:hover::after { opacity: 1; animation: crtDrift 1.6s linear infinite; }
+.aw-top { display: flex; justify-content: space-between; font: 400 11px/1 var(--f-mono); letter-spacing: .14em; text-transform: uppercase; color: var(--dim); }
+.aw-rank { font: 700 clamp(56px, 9vw, 112px)/.9 var(--f-pixel); letter-spacing: -.01em; transition: color .2s, transform .3s; margin-top: auto; }
+.aw-rank small { font-size: .32em; color: var(--dim); margin-left: .2em; }
+.aw:hover .aw-rank { color: var(--ember); transform: translateX(8px); }
+.aw h2 { margin: 0; font: 600 19px/1.35 var(--f-sans); text-wrap: balance; }
+.aw p { margin: 0; color: var(--dim); font-size: 15px; max-width: 46ch; }
+.aw-go { font: 500 11px/1 var(--f-mono); letter-spacing: .18em; color: var(--dim); }
+.aw:hover .aw-go { color: var(--ember); }
+@keyframes crtDrift { to { background-position: 0 3px; } }
+@media (max-width: 760px) { .awards { grid-template-columns: minmax(0, 1fr); } .aw { min-height: 240px; } }
+
+/* ---------- lab ---------- */
+.lab { display: grid; grid-template-columns: minmax(0, 1fr) clamp(300px, 28vw, 380px); height: 100vh; padding-top: calc(var(--head-h) + env(safe-area-inset-top, 0px)); }
+.lab-main { display: flex; flex-direction: column; min-width: 0; min-height: 0; padding: 18px 0 14px max(16px, env(safe-area-inset-left, 0px)); }
+@media (min-width: 720px) { .lab-main { padding-left: 32px; } }
+.lab-main .ptitle { font-size: clamp(36px, 5.5vw, 72px); }
+.lab-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; margin: 14px 0 12px; padding-right: 16px; font: 400 12px/1 var(--f-mono); color: var(--dim); }
+.lab-bar .path { color: var(--ink); }
+.sys { display: flex; border: 1px solid var(--line); }
+.sys button, .lab-bar .rc { all: unset; cursor: pointer; padding: 8px 10px; font: 400 11px/1 var(--f-pixel); letter-spacing: .1em; color: var(--dim); }
+.sys button + button { border-left: 1px solid var(--line); }
+.sys button[aria-selected="true"] { background: var(--ink); color: var(--bg); }
+.lab-bar .rc { border: 1px solid var(--line); color: var(--ink); }
+.sys button:focus-visible, .lab-bar .rc:focus-visible { outline: 2px solid var(--ember); outline-offset: -2px; }
+.graph { position: relative; flex: 1; min-height: 300px; overflow: hidden; border: 1px solid var(--line); cursor: grab; touch-action: none;
+  background-color: var(--bg); background-image: radial-gradient(rgba(236,235,228,.13) 1px, transparent 1.2px); background-size: 24px 24px; }
+.graph.panning { cursor: grabbing; }
+#world { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+#wires { position: absolute; left: 0; top: 0; width: 1px; height: 1px; overflow: visible; }
+#wires path { fill: none; stroke: var(--faint); stroke-width: 1.5; }
+#wires path.flowline { stroke-width: 1.6; }
+#wires path.flowline.dim { stroke: rgba(255,107,26,.35); }
+.node { position: absolute; width: 184px; height: 74px; background: var(--panel); border: 1px solid var(--faint); cursor: pointer; user-select: none; }
+.node:hover { border-color: var(--ink); }
+.node.sel { border-color: var(--ember); box-shadow: 0 0 0 1px var(--ember); }
+.node .nh { display: flex; gap: 6px; align-items: center; padding: 6px 8px; border-bottom: 1px solid var(--line); font: 400 10px/1 var(--f-mono); color: var(--dim); text-transform: uppercase; letter-spacing: .08em; white-space: nowrap; overflow: hidden; }
+.node .nh b { font: 400 11px/1 var(--f-pixel); color: var(--ink); letter-spacing: .04em; }
+.node.sel .nh b { color: var(--ember); }
+.node .nb { padding: 8px; font: 400 11px/1.35 var(--f-mono); color: var(--body); }
+.node .port { position: absolute; top: 33px; width: 8px; height: 8px; background: var(--bg); border: 1px solid var(--ink); }
+.node .port.in { left: -5px; } .node .port.out { right: -5px; }
+.lab-hint { margin: 10px 16px 0 0; font: 400 12px/1.5 var(--f-mono); color: var(--dim); }
+.insp { border-left: 1px solid var(--line); overflow-y: auto; padding: 18px max(16px, env(safe-area-inset-right, 0px)) 24px 22px; display: flex; flex-direction: column; gap: 16px; }
+.insp-h { font: 400 12px/1.3 var(--f-pixel); letter-spacing: .1em; display: flex; gap: 8px; color: var(--ember); border: 1px solid var(--line); padding: 8px 10px; }
+.insp-h b { color: var(--ink); font-weight: 400; }
+.insp h2 { margin: 0; font: 700 clamp(24px, 2.6vw, 34px)/1.05 var(--f-pixel); letter-spacing: .02em; }
+.insp .lead { margin: 0; font: 500 16px/1.5 var(--f-sans); }
+.insp p { margin: 0; color: var(--body); font-size: 15px; }
+.insp-screen { border: 1px solid var(--line); background: var(--panel); height: 120px; position: relative; overflow: hidden; }
+.insp-screen .pv { inset: 0; }
+@media (max-width: 960px) {
+  .lab { grid-template-columns: minmax(0, 1fr); height: auto; }
+  .lab-main { padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  .graph { flex: none; height: 62vh; }
+  .insp { border-left: 0; border-top: 1px solid var(--line); padding-left: max(16px, env(safe-area-inset-left, 0px)); }
+}
+
+/* ---------- about ---------- */
+.ab { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 40px 56px; margin-top: 36px; }
+@media (max-width: 860px) { .ab { grid-template-columns: minmax(0, 1fr); } }
+.portrait { margin: 0; position: sticky; top: calc(var(--head-h) + 24px); align-self: start; }
+.screen { position: relative; aspect-ratio: 4 / 5; max-width: 100%; border: 1px solid var(--ink); overflow: hidden; background: radial-gradient(ellipse at 50% 45%, #1c1c1f 0%, var(--bg) 70%); display: grid; place-items: center; }
+.screen canvas { width: 100%; height: 100%; display: block; }
+.screen::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: repeating-linear-gradient(rgba(236,235,228,.06) 0 1px, transparent 1px 3px); animation: crtDrift 1.6s linear infinite, crtFlick 5s steps(1) infinite; }
+.screen::before { content: ""; position: absolute; left: 0; right: 0; top: -30%; height: 30%; z-index: 2; pointer-events: none; background: linear-gradient(rgba(236,235,228,0), rgba(236,235,228,.07) 60%, rgba(236,235,228,0)); animation: crtRoll 7s linear infinite; }
+@keyframes crtRoll { 0% { transform: translateY(0); } 55%, 100% { transform: translateY(440%); } }
+@keyframes crtFlick { 0%, 100% { opacity: 1; } 47% { opacity: .82; } 48% { opacity: 1; } 83% { opacity: .9; } 84% { opacity: 1; } }
+.portrait figcaption { display: flex; justify-content: space-between; margin-top: 8px; font: 400 11px/1 var(--f-mono); color: var(--dim); letter-spacing: .08em; }
+.ab-text > p { margin: 0 0 18px; color: var(--body); max-width: 62ch; font-size: 16.5px; }
+.ab-text > p.lede { font: 400 clamp(20px, 2.3vw, 26px)/1.45 var(--f-sans); color: var(--ink); max-width: 32ch; }
+.ab-table { margin: 32px 0 0; border-top: 1px solid var(--ink); }
+.ab-table div { display: grid; grid-template-columns: 130px minmax(0, 1fr); gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--line); }
+.ab-table dt { font: 400 11px/1.6 var(--f-mono); letter-spacing: .14em; text-transform: uppercase; color: var(--dim); }
+.ab-table dd { margin: 0; font: 400 14px/1.6 var(--f-mono); }
+.ab-table dd span { color: var(--dim); }
+.ab-table dd.now { color: var(--cyan); }
+@media (max-width: 480px) { .ab-table div { grid-template-columns: minmax(0, 1fr); gap: 4px; } }
+.contact { margin-top: 48px; border: 1px solid var(--line); background: var(--panel); padding: clamp(22px, 4vw, 40px); display: grid; gap: 22px; }
+.contact .big { font: 700 clamp(26px, 4.4vw, 50px)/1.05 var(--f-pixel); margin: 0; letter-spacing: .02em; }
+.contact .big span { color: var(--ember); }
+.mail { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.mail code { font: 500 clamp(15px, 2vw, 18px)/1.3 var(--f-mono); padding: 12px 14px; border: 1px dashed var(--faint); user-select: all; overflow-wrap: anywhere; }
+#copyMsg { font: 400 12px/1 var(--f-mono); color: var(--cyan); min-width: 8ch; }
+
+@media (prefers-reduced-motion: reduce) {
+  .flowline, .screen::after, .screen::before, .pv-radio i, .aw:hover::after { animation: none; }
+  .peek.on .pk { animation-duration: .01s; }
+}
+</style>
+
+<div class="boot" id="boot" aria-hidden="true">
+  <div class="boot-top"><i></i>KABYIK PAUL</div>
+  <div class="boot-stat" id="bootStat"></div>
+  <div class="boot-num"><span id="bootNum">000</span><sup>%</sup></div>
+  <div class="boot-bar" id="bootBar"></div>
+</div>
+<canvas id="px" aria-hidden="true"></canvas>
+<div id="wipe" aria-hidden="true"></div>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#home" aria-label="Kabyik Paul, home"><span class="led"></span>KABYIK PAUL</a>
+    <div class="chan" role="group" aria-label="Monitor channel">
+      <span class="chan-label"><span class="cn">OUT</span> <b id="chNum">01</b> <span id="chName">SIGNAL</span></span>
+      <button type="button" id="chUp" aria-label="Next channel">▲</button>
+      <button type="button" id="chDown" aria-label="Previous channel">▼</button>
+    </div>
+    <nav class="nav" aria-label="Pages">
+      <a href="#projects" data-r="projects"><b>01</b>Projects</a>
+      <a href="#achievements" data-r="achievements"><b>02</b>Achievements</a>
+      <a href="#lab" data-r="lab"><b>03</b>Signal lab</a>
+      <a href="#about" data-r="about"><b>04</b>About</a>
+    </nav>
+    <button class="menu-btn" type="button" id="menuBtn" aria-expanded="false" aria-controls="menu">INDEX <span aria-hidden="true">≡</span></button>
+  </div>
+</header>
+
+<nav class="menu" id="menu" aria-label="Index" hidden>
+  <a href="#home" data-r="home"><span>00</span>Home</a>
+  <a href="#projects" data-r="projects"><span>01</span>Projects</a>
+  <a href="#achievements" data-r="achievements"><span>02</span>Achievements</a>
+  <a href="#lab" data-r="lab"><span>03</span>Signal lab</a>
+  <a href="#about" data-r="about"><span>04</span>About</a>
+  <p>kabyikpaul9@gmail.com<br>Kolkata, India</p>
+</nav>
+
+<main id="pages">
+  <!-- HOME -->
+  <section class="page hero" id="pg-home">
+    <canvas id="field" aria-hidden="true"></canvas>
+    <canvas id="wire" aria-hidden="true" hidden></canvas>
+    <canvas id="static" aria-hidden="true" hidden></canvas>
+    <div class="wrap hero-body">
+      <p class="eyebrow"><span class="dot"></span>IoT · Cybersecurity · Blockchain · Kolkata, IN</p>
+      <h1 class="thesis" id="thesis"><span class="w" data-w="0">SENSORS,</span> <span class="w" data-w="1">SIGNALS,</span><br><span class="w" data-w="2">SECURE SYSTEMS.</span><i class="uline" id="uline" aria-hidden="true"></i></h1>
+      <p class="intro">I'm a B.Tech CSE student at <strong>Heritage Institute of Technology</strong>. I build where software meets hardware: <strong>edge AI on a Raspberry Pi</strong>, <strong>LoRa sensor links on ESP32</strong>, and the back ends that collect the data.</p>
+      <nav class="channels" aria-label="Sections">
+        <a href="#projects"><span class="n">01</span><span class="l">Projects</span></a>
+        <a href="#achievements"><span class="n">02</span><span class="l">Achievements</span></a>
+        <a href="#lab"><span class="n">03</span><span class="l">Signal lab</span></a>
+        <a href="#about"><span class="n">04</span><span class="l">About me</span></a>
+      </nav>
+    </div>
+    <div class="wrap">
+      <div class="telemetry" aria-hidden="true">
+        <div class="vals">
+          <span>x <b id="tx">0.000</b></span>
+          <span>y <b id="ty">0.000</b></span>
+          <span id="tread">temp <b id="tt">24.0</b> °C (sim)</span>
+          <span><b id="fps">60</b> fps</span>
+        </div>
+        <span class="cue"><span class="hint" id="hint">Move to heat. Hold to ignite.</span><span class="pips" id="pips"><i></i><i></i><i></i></span><span id="cueTxt">Scroll to switch</span></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROJECTS -->
+  <section class="page" id="pg-projects" hidden>
+    <div class="wrap pg">
+      <div class="pg-head">
+        <h1 class="ptitle" data-text="PROJECTS">PROJECTS</h1>
+        <p class="pg-lede">Edge AI, IoT hardware and full-stack builds. Open one to see how it works.</p>
+      </div>
+      <div class="kit">
+        <p><em>Toolkit</em>VS Code <i>/</i> Git <i>/</i> GitHub <i>/</i> Vercel <i>/</i> Render <i>/</i> Docker <i>/</i> Arduino <i>/</i> Raspberry Pi <i>/</i> ESP32</p>
+        <p><em>Skills</em>Edge AI <i>/</i> IoT systems <i>/</i> LoRa + MQTT <i>/</i> REST APIs <i>/</i> Auth + security <i>/</i> Databases <i>/</i> Testing <i>/</i> Debugging</p>
+      </div>
+      <ol class="rows" id="rows"></ol>
+      <div class="pfoot"><a href="#about">kabyikpaul9@gmail.com</a><span>05 builds · Kolkata, IN</span></div>
+    </div>
+  </section>
+
+  <!-- PROJECT DETAIL -->
+  <section class="page" id="pg-project" hidden></section>
+
+  <!-- ACHIEVEMENTS -->
+  <section class="page" id="pg-achievements" hidden>
+    <div class="wrap pg">
+      <div class="pg-head">
+        <h1 class="ptitle" data-text="ACHIEVEMENTS">ACHIEVEMENTS</h1>
+        <p class="pg-lede">Competitions and research. Each one links to the build behind it.</p>
+      </div>
+      <div class="awards" id="awards"></div>
+      <div class="pfoot"><a href="#about">kabyikpaul9@gmail.com</a><span>04 entries</span></div>
+    </div>
+  </section>
+
+  <!-- LAB -->
+  <section class="page" id="pg-lab" hidden>
+    <div class="lab">
+      <div class="lab-main">
+        <h1 class="ptitle" data-text="SIGNAL LAB">SIGNAL LAB</h1>
+        <div class="lab-bar">
+          <span class="path">/kabyik/lab</span>
+          <span id="labCount">6 nodes</span>
+          <div class="sys" role="tablist" aria-label="System">
+            <button type="button" role="tab" data-sys="edgeexit" aria-selected="true">EDGEEXIT IQ</button>
+            <button type="button" role="tab" data-sys="lora" aria-selected="false">LORA FLOOD</button>
+          </div>
+          <button type="button" class="rc" id="recenter">RE-CENTER</button>
+        </div>
+        <div class="graph" id="graph"><div id="world"><svg id="wires" aria-hidden="true"></svg></div></div>
+        <p class="lab-hint">Drag nodes. Drag the background to pan. Scroll to zoom. Click a node to inspect it.</p>
+      </div>
+      <aside class="insp" id="insp" aria-live="polite"></aside>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section class="page" id="pg-about" hidden>
+    <div class="wrap pg">
+      <div class="pg-head">
+        <h1 class="ptitle" data-text="ABOUT">ABOUT</h1>
+        <p class="pg-lede">CSE student, IoT and security. Kolkata, 22.57° N · 88.36° E.</p>
+      </div>
+      <div class="ab">
+        <figure class="portrait">
+          <div class="screen"><canvas id="mono" aria-label="Kabyik Paul monogram"></canvas></div>
+          <figcaption><span>fig. 01</span><span>[KP · live]</span></figcaption>
+        </figure>
+        <div class="ab-text">
+          <p class="lede">I like building things that connect software with hardware, and then working out how to keep them secure.</p>
+          <p>I'm doing a B.Tech in Computer Science &amp; Engineering at Heritage Institute of Technology, Kolkata, specialising in IoT and Cybersecurity including Blockchain. Most connected devices are poorly secured, which is why that pairing made sense to me.</p>
+          <p>I learn by building. When something breaks, I debug it step by step until I understand the cause. That is how I learned to run YOLO on a Raspberry Pi and keep a LoRa link alive between two ESP32 boards. Hackathon deadlines taught me to split a problem across a team and to test what we build before calling it done.</p>
+          <dl class="ab-table">
+            <div><dt>Now</dt><dd class="now">Vyohm AI</dd></div>
+            <div><dt>Before</dt><dd>Back-End Developer Intern <span>· Corporates Guide, Kolkata</span></dd></div>
+            <div><dt>Study</dt><dd>B.Tech CSE (IoT &amp; Cybersecurity incl. Blockchain) <span>· Heritage Institute of Technology · present</span></dd></div>
+            <div><dt>Earlier</dt><dd>Diploma <span>· Falakata Polytechnic · 2023</span><br>ICSE Class X <span>· St. Xavier's School · 2020</span></dd></div>
+            <div><dt>Practice</dt><dd>Edge AI, IoT hardware, back-end APIs, databases, testing</dd></div>
+            <div><dt>Code</dt><dd>C++ (OOP), Python, JavaScript, TypeScript, SQL, HTML, CSS</dd></div>
+            <div><dt>Languages</dt><dd>English · Bengali · Hindi</dd></div>
+            <div><dt>Off hours</dt><dd>Gaming · Cooking</dd></div>
+          </dl>
+          <div class="contact">
+            <p class="big">OPEN A<br><span>CHANNEL.</span></p>
+            <div class="mail">
+              <code id="email">kabyikpaul9@gmail.com</code>
+              <button class="btn" type="button" id="copyBtn">Copy email</button>
+              <span id="copyMsg" role="status"></span>
+            </div>
+            <div class="links">
+              <a class="btn ghost" href="https://www.linkedin.com/in/kabyik-paul-77387b2ba" target="_blank" rel="noopener">LinkedIn ↗</a>
+              <a class="btn ghost" href="https://github.com/Kabyik-004" target="_blank" rel="noopener">GitHub ↗</a>
+              <a class="btn ghost" href="https://www.youtube.com/@kabyikpaul5651" target="_blank" rel="noopener">YouTube ↗</a>
+              <a class="btn ghost" href="https://x.com/KabyikP" target="_blank" rel="noopener">X ↗</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="pfoot"><span>© 2026 Kabyik Paul</span><span>Open to roles · Kolkata, IN</span></div>
+    </div>
+  </section>
+</main>
+
+<div class="peek" id="peek" aria-hidden="true"><div class="pk"><span class="pk-dot"></span><div id="pkIn"></div><span class="pk-cap"><span id="pkCap"></span><span>preview</span></span></div></div>
+
+<script>
+(() => {
+'use strict';
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const $ = (s, r = document) => r.querySelector(s);
+const pad = n => String(n).padStart(2, '0');
+
+/* =========================================================
+   DATA
+   ========================================================= */
+const FIRE_SVG = `<div class="diagram" role="img" aria-label="Pipeline: a CSI camera feeds a Raspberry Pi running YOLOv11. On detection the Pi signals an Arduino UNO that drives LED exit indicators and a buzzer, and pushes alerts to a live dashboard.">
+<svg viewBox="0 0 760 180" xmlns="http://www.w3.org/2000/svg">
+<path class="wire" d="M150 70 H230"/><path class="flowline" d="M150 70 H230"/>
+<path class="wire" d="M400 70 H480"/><path class="flowline" d="M400 70 H480"/>
+<path class="wire" d="M620 70 H650"/><path class="flowline" d="M620 70 H650"/>
+<path class="wire" d="M315 105 V140 H480"/><path class="flowline c" d="M315 105 V140 H480"/>
+<rect class="box" x="20" y="40" width="130" height="60"/><text class="t" x="34" y="66">CSI CAMERA</text><text class="s" x="34" y="85">live video</text>
+<rect class="box key" x="230" y="35" width="170" height="70"/><text class="t" x="244" y="62">RASPBERRY PI</text><text class="s" x="244" y="81">YOLOv11 · edge</text><text class="s" x="244" y="96">fire / smoke</text>
+<rect class="box" x="480" y="40" width="140" height="60"/><text class="t" x="494" y="66">ARDUINO UNO</text><text class="s" x="494" y="85">GPIO control</text>
+<rect class="box" x="650" y="40" width="94" height="60"/><text class="t" x="662" y="66">LED+BUZZ</text><text class="s" x="662" y="85">exit path</text>
+<rect class="box" x="480" y="122" width="140" height="40"/><text class="t" x="494" y="146">DASHBOARD</text><text class="s" x="580" y="146">live</text>
+</svg></div>`;
+
+const PV = {
+  edgeexit: '<div class="pv pv-fire"><i class="bb"><span>FIRE</span></i></div>',
+  lora: '<div class="pv pv-radio"><i></i><i></i><i></i><b></b></div>',
+  expense: '<div class="pv pv-bars"><i style="--h:38%"></i><i style="--h:62%"></i><i style="--h:45%"></i><i style="--h:88%"></i><i style="--h:30%"></i><i style="--h:55%"></i></div>',
+  sahaay: '<div class="pv pv-mods"><span>FEED CONNECT</span><span>EMPOWER BRIDGE</span><span>EDU BRIDGE</span></div>',
+  forgeai: '<div class="pv pv-code"><i class="k" style="--w:38%"></i><i style="--w:62%;--x:16px"></i><i style="--w:48%;--x:16px"></i><i class="k" style="--w:30%;--x:32px"></i><i style="--w:56%;--x:32px"></i><i style="--w:24%;--x:16px"></i><i class="e"></i></div>'
+};
+
+const P = [
+  { id: 'edgeexit', short: 'EDGEEXIT IQ', name: 'EdgeExit IQ', sub: 'AI + IoT fire detection and guided evacuation', meta: 'Group / AI + IoT hardware',
+    type: 'Group project · hardware prototype', role: 'Detection module, hardware integration, real-time alerts', stack: 'YOLOv11 · Raspberry Pi · Arduino UNO · CSI camera',
+    tags: [['hot', '2nd Runner-Up · IEEE MTT-S HITK SBC'], ['', 'Paper submitted · CALCON 2026']],
+    visual: FIRE_SVG,
+    desc: 'A camera-based system that spots fire and smoke indoors and guides people out. A YOLOv11 model runs on the device itself, so an alert never waits on the internet.',
+    bullets: ['Contributed to the AI detection module that identifies early fire and a safe evacuation path.', 'Helped integrate the hardware for continuous real-time monitoring.', 'Worked on the real-time alert system that warns occupants during a hazard.'],
+    specs: [['Model', 'YOLOv11'], ['Compute', 'Raspberry Pi, on device'], ['Control', 'Arduino UNO · GPIO'], ['Output', 'LED exit path, buzzer, dashboard'], ['Paper', 'CALCON 2026 · ID 238 · under review']],
+    links: [] },
+  { id: 'lora', short: 'LORA FLOOD', name: 'LoRa Flood Monitor', sub: 'Long-range sensing with local and web alerts', meta: 'ESP32 · LoRa 433 MHz · MQTT',
+    type: 'Working prototype', role: 'Firmware, wiring, telemetry, dashboard link', stack: 'Arduino C++ · 2× ESP32 · LoRa · MQTT',
+    tags: [['ok', 'Working prototype'], ['', 'Arduino C++']],
+    visual: '<div class="path-line"><b>SENSORS</b> → <b>TX ESP32</b> <em>⟿ LoRa 433 MHz ⟿</em> <b>RX ESP32</b> → Wi-Fi / MQTT → <b>DASHBOARD</b></div>',
+    desc: 'Two ESP32 boards talk over 433 MHz LoRa. The field node reads five sensors, classifies the risk as normal, warning or danger, and sends it on. The receiver shows it on an OLED, sounds a buzzer and publishes every packet over MQTT to a live web dashboard.',
+    bullets: ['Transmitter reads temperature, humidity, ultrasonic distance, gas and soil moisture, and maps soil moisture to a percentage.', 'Receiver parses each packet and tracks RSSI, packet count and stale data.', 'OLED, RGB LED and buzzer on both nodes for local alerts.'],
+    specs: [['Radio', 'LoRa · 433 MHz'], ['Boards', 'ESP32 transmitter + receiver'], ['Sensors', 'Temp, humidity, ultrasonic, gas, soil'], ['Levels', 'Normal · warning · danger'], ['Network', 'Wi-Fi → MQTT → web dashboard']],
+    links: [['Source', 'https://github.com/Kabyik-004/natural_disaster_detection_system', 'ghost']] },
+  { id: 'expense', short: 'EXPENSE TRACKER', name: 'Expense Tracker', sub: 'with a Smart DSA Engine', meta: 'React · Flask · PostgreSQL',
+    type: 'Full-stack web app · live', role: 'Design, build and deployment', stack: 'React · Flask · PostgreSQL · JWT · Vercel + Render',
+    tags: [['ok', 'Live'], ['', 'React'], ['', 'Flask'], ['', 'PostgreSQL']],
+    visual: '',
+    desc: 'A full-stack finance app for tracking income and spending, with data structures doing the real work: binary search over IDs and date ranges, multi-field sorting, and a stack-based undo.',
+    bullets: ['JWT auth with refresh tokens, a token blocklist and bcrypt password hashing.', 'Dashboard with balance, savings rate, top category and monthly summaries.', 'Undo for create, update and delete, held in a per-user stack of 10 operations.'],
+    specs: [['Frontend', 'React on Vercel'], ['Backend', 'Flask API on Render'], ['Database', 'PostgreSQL'], ['Search', 'Linear + binary search'], ['Undo', 'Stack (LIFO), 10 ops per user']],
+    links: [['Open live demo', 'https://expense-tracker-with-smart-dsa-engi.vercel.app', ''], ['Source', 'https://github.com/Kabyik-004/-Expense-Tracker-with-Smart-DSA-Engine', 'ghost']] },
+  { id: 'sahaay', short: 'SAHAAY', name: 'Sahaay', sub: 'One platform against hunger, poverty and lack of education', meta: '2025 / Smart India Hackathon',
+    type: 'Group project · SIH 2025', role: 'Blockchain implementation, database architecture, module testing', stack: 'React · TypeScript · Vite · Tailwind CSS',
+    tags: [['hot', 'Top 50 nationally · SIH 2025'], ['', 'Group project']],
+    visual: '',
+    desc: 'Sahaay brings together FeedConnect for food redistribution, EmpowerBridge for livelihoods, EduBridge for learning access, and an impact dashboard. It was picked to represent our college at Smart India Hackathon 2025 and reached the national top 50.',
+    bullets: ['Worked on the blockchain implementation and the database architecture.', 'Tested the platform modules for functionality and reliability.'],
+    specs: [['Modules', 'FeedConnect · EmpowerBridge · EduBridge'], ['Frontend', 'React 18 · TypeScript · Vite'], ['Styling', 'Tailwind CSS'], ['Result', 'Top 50 teams nationally']],
+    links: [['Source', 'https://github.com/Kabyik-004/sahaay2', 'ghost']] },
+  { id: 'forgeai', short: 'FORGEAI', name: 'ForgeAI', sub: 'An AI-native desktop IDE', meta: 'In progress / TypeScript',
+    type: 'Personal project · in progress', role: 'Architecture and build', stack: 'TypeScript · desktop shell · OS keychain',
+    tags: [['', 'In progress'], ['', 'TypeScript']],
+    visual: '',
+    desc: 'An IDE built so a developer can hand an AI a real task while staying in control of what it may touch. It is built module by module, with each part (UI, providers, agent, tools, terminal, git, security) replaceable on its own.',
+    bullets: ['Done: desktop shell, workspace, and provider setup with API keys stored in the OS keychain.', 'Next: chat and streaming, then tool access with permission controls.'],
+    specs: [['Status', 'Module 3 of the plan complete'], ['Keys', 'Stored in the OS keychain'], ['Next', 'Chat and streaming']],
+    links: [['Source', 'https://github.com/Kabyik-004/HELION-s-AI-IDE', 'ghost']] }
+];
+
+const AW = [
+  { rank: '2ND', unit: 'R-UP', org: 'IEEE MTT-S HITK SBC', title: 'Inter-Institute Hardware Prototype Development Competition', text: 'We built and showed a working AI + IoT hardware solution.', proj: 'edgeexit' },
+  { rank: '50', unit: 'TOP', org: 'SIH 2025', title: 'Smart India Hackathon 2025', text: 'Sahaay represented our college and reached the top 50 teams in the country.', proj: 'sahaay', pre: true },
+  { rank: '3RD', unit: '', org: 'GDG', title: 'IdeateX Ideathon by GDG', text: 'Third place with our project Pirate Cove.', proj: null },
+  { rank: 'PAPER', unit: '', org: 'CALCON 2026', title: 'EdgeExitIQ: AI-Integrated IoT Solution for Real-Time Fire Detection and Guided Evacuation', text: 'Submitted to the CSE track (Paper ID 238), under review.', proj: 'edgeexit' }
+];
+
+/* =========================================================
+   STATIC RENDER
+   ========================================================= */
+$('#rows').innerHTML = P.map((p, i) => `<li><a class="row" href="#project-${p.id}" data-peek="${p.id}"><span class="r-n">${pad(i + 1)}</span><span class="r-name">${p.short}</span><span class="r-meta">${p.meta}</span><span class="r-view">VIEW ›</span></a></li>`).join('');
+
+$('#awards').innerHTML = AW.map((a, i) => {
+  const tag = a.proj ? 'a' : 'div';
+  const href = a.proj ? ` href="#project-${a.proj}"` : '';
+  const rank = a.pre ? `<small style="margin:0 .2em 0 0">${a.unit}</small>${a.rank}` : `${a.rank}${a.unit ? `<small>${a.unit}</small>` : ''}`;
+  return `<${tag} class="aw"${href}><div class="aw-top"><span>fig. ${pad(i + 1)}</span><span>${a.org}</span></div><div class="aw-rank">${rank}</div><h2>${a.title}</h2><p>${a.text}</p>${a.proj ? '<span class="aw-go">VIEW PROJECT ›</span>' : ''}</${tag}>`;
+}).join('');
+
+function renderDetail(id) {
+  const i = P.findIndex(p => p.id === id), p = P[i];
+  const prev = P[(i - 1 + P.length) % P.length], next = P[(i + 1) % P.length];
+  $('#pg-project').innerHTML = `<div class="wrap pg">
+    <div class="crumbs"><a href="#projects">‹ All projects</a><span>${pad(i + 1)} / ${pad(P.length)}</span></div>
+    <div class="d-title"><span class="d-n">${pad(i + 1)}</span><h1 class="ptitle" data-text="${p.short}">${p.short}</h1></div>
+    <p class="d-sub">${p.sub}</p>
+    <dl class="d-meta"><div><dt>Type</dt><dd>${p.type}</dd></div><div><dt>Role</dt><dd>${p.role}</dd></div><div><dt>Stack</dt><dd>${p.stack}</dd></div></dl>
+    <div class="tags">${p.tags.map(([c, t]) => `<span class="tag ${c}">${t}</span>`).join('')}</div>
+    ${p.visual ? `<div class="d-visual">${p.visual}</div>` : ''}
+    <div class="d-body">
+      <div class="d-text"><p>${p.desc}</p><ul>${p.bullets.map(b => `<li>${b}</li>`).join('')}</ul></div>
+      <div class="d-side"><dl class="specs">${p.specs.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join('')}</dl>
+      ${p.links.length ? `<div class="links">${p.links.map(([t, u, c]) => `<a class="btn ${c}" href="${u}" target="_blank" rel="noopener">${t} ↗</a>`).join('')}</div>` : ''}</div>
+    </div>
+    <nav class="d-next" aria-label="More projects"><a href="#project-${prev.id}"><small>‹ Previous</small><span>${prev.short}</span></a><a href="#project-${next.id}"><small>Next ›</small><span>${next.short}</span></a></nav>
+  </div>`;
+}
+
+/* =========================================================
+   BOOT
+   ========================================================= */
+const boot = $('#boot'), bar = $('#bootBar'), num = $('#bootNum'), stat = $('#bootStat');
+for (let i = 0; i < 24; i++) bar.appendChild(document.createElement('span'));
+const BOOT = [['Type: edge node · signal monitor', ''], ['Radio: LoRa 433 MHz', 'ok'], ['Model: YOLOv11 weights', 'ok'], ['Link: MQTT broker', 'ok'], ['Owner: Kabyik Paul', 'ok'], ['Status', 'live']];
+if (!reduce) {
+  const t0 = performance.now(), dur = 1600; let shown = 0;
+  const step = now => {
+    const p = Math.min(1, (now - t0) / dur);
+    num.textContent = String(Math.round(p * 100)).padStart(3, '0');
+    const on = Math.round(p * 24);
+    [...bar.children].forEach((s, i) => s.classList.toggle('on', i < on));
+    const want = Math.min(BOOT.length, Math.floor(p * BOOT.length) + 1);
+    while (shown < want) { const [k, v] = BOOT[shown++]; const d = document.createElement('div'); d.innerHTML = `<span>${k}</span><b>${v}</b>`; stat.appendChild(d); }
+    if (p < 1) requestAnimationFrame(step); else setTimeout(() => sweep({ x: innerWidth * 0.25, y: innerHeight * 0.8 }, () => boot.classList.add('gone')), 200);
+  };
+  requestAnimationFrame(step);
+} else boot.classList.add('done');
+
+/* =========================================================
+   TITLE SCRAMBLE
+   ========================================================= */
+const GLYPHS = '█▓▒░#/<>*+=01';
+function scramble(el) {
+  if (!el) return;
+  const text = el.dataset.text || el.textContent;
+  el.dataset.text = text;
+  if (reduce) { el.textContent = text; return; }
+  const t0 = performance.now(), dur = Math.min(700, 120 + text.length * 45);
+  el.setAttribute('aria-label', text);
+  const tick = now => {
+    const p = Math.min(1, (now - t0) / dur);
+    const n = Math.floor(p * text.length);
+    let out = text.slice(0, n);
+    if (p < 1) {
+      const rest = Math.min(3, text.length - n);
+      for (let i = 0; i < rest; i++) out += text[n + i] === ' ' ? ' ' : GLYPHS[(Math.random() * GLYPHS.length) | 0];
+      el.innerHTML = out.replace(/&/g, '&amp;').replace(/</g, '&lt;') + '<span class="cur"></span>';
+      requestAnimationFrame(tick);
+    } else el.textContent = text;
+  };
+  requestAnimationFrame(tick);
+}
+
+/* =========================================================
+   PIXEL SWEEP TRANSITION
+   ========================================================= */
+const px = $('#px'), pctx = px.getContext('2d'), wipe = $('#wipe');
+let sweeping = false;
+function sweep(origin, onCovered) {
+  if (reduce) { onCovered(); return; }
+  sweeping = true;
+  const dpr = Math.min(2, devicePixelRatio || 1);
+  const W = innerWidth, H = innerHeight;
+  px.width = W * dpr; px.height = H * dpr; pctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const S = Math.max(16, Math.round(Math.min(W, H) / 34));
+  const cols = Math.ceil(W / S), rows = Math.ceil(H / S), n = cols * rows;
+  const ox = origin ? origin.x : W / 2, oy = origin ? origin.y : H / 2;
+  const maxD = Math.max(Math.hypot(ox, oy), Math.hypot(W - ox, oy), Math.hypot(ox, H - oy), Math.hypot(W - ox, H - oy));
+  const d = new Float32Array(n), col = new Uint8Array(n);
+  for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
+    const i = r * cols + c;
+    d[i] = Math.hypot(c * S + S / 2 - ox, r * S + S / 2 - oy) / maxD + Math.random() * 0.16;
+    const q = Math.random(); col[i] = q < 0.22 ? 1 : q < 0.5 ? 2 : q < 0.7 ? 3 : 0;
+  }
+  const COLORS = ['#060607', '#ff6b1a', '#ecebe4', '#5a5a58'];
+  const EDGE = 0.1, T1 = 340, T2 = 420;
+  const t0 = performance.now(); let swapped = false;
+  const frame = now => {
+    const t = now - t0;
+    pctx.clearRect(0, 0, W, H);
+    if (t < T1) {
+      const f = (t / T1) * 1.3;
+      for (let i = 0; i < n; i++) { if (d[i] < f) { pctx.fillStyle = (f - d[i] < EDGE) ? COLORS[col[i]] : COLORS[0]; pctx.fillRect((i % cols) * S, ((i / cols) | 0) * S, S - 1, S - 1); } }
+    } else {
+      if (!swapped) { swapped = true; onCovered(); wipe.classList.remove('go'); void wipe.offsetWidth; wipe.classList.add('go'); }
+      const f = Math.min(1.3, ((t - T1) / T2) * 1.3);
+      for (let i = 0; i < n; i++) { if (d[i] >= f) { pctx.fillStyle = (d[i] - f < EDGE) ? COLORS[col[i]] : COLORS[0]; pctx.fillRect((i % cols) * S, ((i / cols) | 0) * S, S - 1, S - 1); } }
+      if (t > T1 + T2) { pctx.clearRect(0, 0, W, H); sweeping = false; return; }
+    }
+    requestAnimationFrame(frame);
+  };
+  requestAnimationFrame(frame);
+}
+
+/* =========================================================
+   ROUTER
+   ========================================================= */
+const PAGES = ['home', 'projects', 'achievements', 'lab', 'about'];
+const TITLES = { home: 'Kabyik Paul', projects: 'Projects · Kabyik Paul', achievements: 'Achievements · Kabyik Paul', lab: 'Signal lab · Kabyik Paul', about: 'About · Kabyik Paul' };
+function parse(h) {
+  h = (h || '').replace(/^#/, '');
+  if (h.startsWith('project-') && P.some(p => p.id === h.slice(8))) return { page: 'project', id: h.slice(8) };
+  return { page: PAGES.includes(h) ? h : 'home' };
+}
+let route = null, lastOrigin = null;
+const menu = $('#menu'), menuBtn = $('#menuBtn');
+function closeMenu() { menu.hidden = true; menuBtn.setAttribute('aria-expanded', 'false'); }
+menuBtn.addEventListener('click', () => { const open = menu.hidden; menu.hidden = !open; menuBtn.setAttribute('aria-expanded', String(open)); });
+
+function apply(r) {
+  if (r.page === 'project') renderDetail(r.id);
+  document.querySelectorAll('.page').forEach(pg => { pg.hidden = pg.id !== 'pg-' + r.page; });
+  const navKey = r.page === 'project' ? 'projects' : r.page;
+  document.body.dataset.route = r.page;
+  document.querySelectorAll('[data-r]').forEach(a => { const on = a.dataset.r === navKey; a.classList.toggle('on', on); on ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current'); });
+  document.title = r.page === 'project' ? P.find(p => p.id === r.id).name + ' · Kabyik Paul' : TITLES[r.page];
+  closeMenu(); hidePeek();
+  scrollTo(0, 0);
+  const pg = $('#pg-' + r.page);
+  scramble(pg.querySelector('.ptitle'));
+  if (r.page === 'lab') labShow();
+  if (r.page === 'about') monoStart(); else monoStop();
+  route = r;
+}
+function go() {
+  const r = parse(location.hash);
+  if (route && route.page === r.page && route.id === r.id) return;
+  if (!route) { apply(r); return; }
+  sweep(lastOrigin, () => apply(r));
+  lastOrigin = null;
+}
+document.addEventListener('click', e => {
+  const a = e.target.closest('a[href^="#"]');
+  if (!a || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey) return;
+  lastOrigin = { x: e.clientX || innerWidth / 2, y: e.clientY || innerHeight / 2 };
+  if (a.getAttribute('href') === location.hash || (a.getAttribute('href') === '#home' && !location.hash)) { e.preventDefault(); if (route.page !== 'home' || a.getAttribute('href') !== '#home') return; }
+});
+addEventListener('hashchange', go);
+
+/* =========================================================
+   PEEK (hover preview on project rows)
+   ========================================================= */
+const peek = $('#peek'), pkIn = $('#pkIn'), pkCap = $('#pkCap');
+let peekId = null, mx = 0, my = 0, pxx = 0, pyy = 0, peekRaf = 0;
+function hidePeek() { peek.classList.remove('vis', 'on'); peekId = null; }
+function peekLoop() {
+  pxx += (mx - pxx) * 0.22; pyy += (my - pyy) * 0.22;
+  const x = Math.min(innerWidth - 276, pxx + 22), y = Math.min(innerHeight - 184, pyy - 84);
+  peek.style.transform = `translate(${x}px, ${Math.max(70, y)}px)`;
+  peekRaf = peekId ? requestAnimationFrame(peekLoop) : 0;
+}
+$('#rows').addEventListener('pointermove', e => {
+  mx = e.clientX; my = e.clientY;
+  const row = e.target.closest('.row');
+  const id = row ? row.dataset.peek : null;
+  if (id === peekId) return;
+  if (!id) { hidePeek(); return; }
+  if (!peekId) { pxx = mx; pyy = my; }
+  peekId = id;
+  pkIn.innerHTML = PV[id]; pkCap.textContent = P.find(p => p.id === id).short;
+  peek.classList.remove('on'); void peek.offsetWidth; peek.classList.add('vis', 'on');
+  if (!peekRaf) peekRaf = requestAnimationFrame(peekLoop);
+});
+$('#rows').addEventListener('pointerleave', hidePeek);
+
+/* =========================================================
+   COPY EMAIL
+   ========================================================= */
+const copyBtn = $('#copyBtn'), copyMsg = $('#copyMsg'), email = $('#email');
+copyBtn.addEventListener('click', () => {
+  const fallback = () => { const r = document.createRange(); r.selectNodeContents(email); const s = getSelection(); s.removeAllRanges(); s.addRange(r); copyMsg.textContent = 'Selected, press Ctrl+C'; };
+  try { navigator.clipboard.writeText(email.textContent.trim()).then(() => { copyMsg.textContent = 'Copied'; setTimeout(() => copyMsg.textContent = '', 2000); }, fallback); }
+  catch (e) { fallback(); }
+});
+
+/* =========================================================
+   SIGNAL LAB (node graph)
+   ========================================================= */
+const SYS = {
+  edgeexit: { name: 'EdgeExit IQ', proj: 'edgeexit', nodes: [
+    { id: 'cam', t: 'CSI CAMERA', k: 'input', s: 'Live video feed', x: 0, y: 120, info: 'Plugs into the Pi\'s dedicated camera serial interface. It is faster and lighter on the CPU than a USB webcam, which leaves more room for inference.', sp: [['Bus', 'CSI'], ['Feeds', 'Raspberry Pi']] },
+    { id: 'pi', t: 'RASPBERRY PI', k: 'edge', s: 'YOLOv11 · fire / smoke', x: 260, y: 120, info: 'Runs the YOLOv11 model on every frame to find fire and smoke. Everything happens on the device, so an alert does not depend on the internet.', sp: [['Model', 'YOLOv11'], ['Runs', 'On device'], ['Why edge', 'Latency, reliability, privacy']], pv: 'edgeexit' },
+    { id: 'ard', t: 'ARDUINO UNO', k: 'control', s: 'GPIO outputs', x: 520, y: 40, info: 'A microcontroller that drives the exit LEDs and the buzzer. Keeping the alarm hardware separate means it keeps working even when the Pi is busy.', sp: [['Role', 'Real-time control'], ['Outputs', 'LEDs, buzzer']] },
+    { id: 'led', t: 'LED EXIT PATH', k: 'output', s: 'Points to safe exits', x: 780, y: -20, info: 'LED indicators light the way toward a safe exit.', sp: [['Type', 'Visual guidance']] },
+    { id: 'buz', t: 'BUZZER', k: 'output', s: 'Audible alarm', x: 780, y: 100, info: 'An audible alarm warns everyone nearby.', sp: [['Type', 'Audible alert']] },
+    { id: 'dash', t: 'DASHBOARD', k: 'network', s: 'Live alerts', x: 520, y: 220, info: 'A live dashboard shows alerts so someone can follow the situation as it happens.', sp: [['Shows', 'Detections, alert state']] }
+  ], wires: [['cam', 'pi'], ['pi', 'ard'], ['ard', 'led'], ['ard', 'buz'], ['pi', 'dash', 'c']] },
+  lora: { name: 'LoRa Flood Monitor', proj: 'lora', nodes: [
+    { id: 'sen', t: 'SENSOR ARRAY', k: 'input', s: '5 sensors', x: 0, y: 100, info: 'Temperature, humidity, ultrasonic distance for water level, gas and soil moisture.', sp: [['Sensors', 'Temp, humidity, ultrasonic, gas, soil']] },
+    { id: 'tx', t: 'TX ESP32', k: 'field node', s: 'Thresholds → level', x: 250, y: 100, info: 'Reads the sensors, turns soil moisture into a percentage, checks the thresholds and classifies the risk as normal, warning or danger.', sp: [['Levels', 'Normal · warning · danger'], ['Local', 'OLED, RGB LED, buzzer']] },
+    { id: 'rf', t: 'LORA 433 MHZ', k: 'radio', s: 'Long-range link', x: 500, y: 100, info: 'The long-range radio link between the field node and the receiver.', sp: [['Band', '433 MHz'], ['Mode', 'Point to point']], pv: 'lora' },
+    { id: 'rx', t: 'RX ESP32', k: 'receiver', s: 'RSSI · packet count', x: 750, y: 100, info: 'Parses each packet, tracks signal strength and packet count, and flags stale data.', sp: [['Checks', 'RSSI, packet count, stale data']] },
+    { id: 'loc', t: 'OLED · BUZZER', k: 'output', s: 'Local alert', x: 1000, y: 0, info: 'A screen, a colour status light and an alarm at the receiver.', sp: [['Type', 'Local alert']] },
+    { id: 'mq', t: 'MQTT BROKER', k: 'network', s: 'Wi-Fi publish', x: 1000, y: 200, info: 'The receiver connects to Wi-Fi and publishes every valid packet to the broker.', sp: [['Topics', 'telemetry, alert, status']] },
+    { id: 'web', t: 'WEB DASHBOARD', k: 'output', s: 'Live values', x: 1250, y: 200, info: 'Subscribes to the topics and shows the readings live.', sp: [['Shows', 'All seven telemetry fields']] }
+  ], wires: [['sen', 'tx'], ['tx', 'rf'], ['rf', 'rx'], ['rx', 'loc'], ['rx', 'mq', 'c'], ['mq', 'web', 'c']] }
+};
+const NW = 184, NH = 74;
+const graph = $('#graph'), world = $('#world'), wiresSvg = $('#wires'), insp = $('#insp');
+let sysKey = 'edgeexit', view = { x: 0, y: 0, z: 1 }, sel = null, labReady = false;
+const state = {}; // node positions per system
+function sysNodes() { return state[sysKey]; }
+function applyView() { world.style.transform = `translate(${view.x}px, ${view.y}px) scale(${view.z})`; }
+function drawWires() {
+  const N = sysNodes(), byId = Object.fromEntries(N.map(n => [n.id, n]));
+  wiresSvg.innerHTML = SYS[sysKey].wires.map(([a, b, c]) => {
+    const A = byId[a], B = byId[b];
+    const x1 = A.x + NW, y1 = A.y + NH / 2, x2 = B.x, y2 = B.y + NH / 2, dx = Math.max(40, Math.abs(x2 - x1) / 2);
+    const d = `M${x1} ${y1} C${x1 + dx} ${y1}, ${x2 - dx} ${y2}, ${x2} ${y2}`;
+    const hot = sel && (sel === a || sel === b);
+    return `<path d="${d}"/><path class="flowline${c ? ' c' : ''}${sel && !hot ? ' dim' : ''}" d="${d}"/>`;
+  }).join('');
+}
+function renderNodes() {
+  world.querySelectorAll('.node').forEach(n => n.remove());
+  sysNodes().forEach(n => {
+    const el = document.createElement('div');
+    el.className = 'node' + (sel === n.id ? ' sel' : '');
+    el.dataset.id = n.id; el.tabIndex = 0; el.setAttribute('role', 'button'); el.setAttribute('aria-label', `${n.t}: inspect`);
+    el.style.left = n.x + 'px'; el.style.top = n.y + 'px';
+    el.innerHTML = `<div class="nh"><span>[${n.k}]</span><b>${n.t}</b></div><div class="nb">${n.s}</div><i class="port in"></i><i class="port out"></i>`;
+    world.appendChild(el);
+  });
+  drawWires();
+  $('#labCount').textContent = `${sysNodes().length} nodes · ${SYS[sysKey].wires.length} links`;
+}
+function inspect(id) {
+  sel = id;
+  world.querySelectorAll('.node').forEach(el => el.classList.toggle('sel', el.dataset.id === id));
+  drawWires();
+  const S = SYS[sysKey];
+  if (!id) {
+    insp.innerHTML = `<div class="insp-h">[SYS] <b>${S.name.toUpperCase()}</b></div><h2>${S.name.toUpperCase()}</h2><p class="lead">${P.find(p => p.id === S.proj).sub}.</p><p>${P.find(p => p.id === S.proj).desc}</p><p style="color:var(--dim)">Click any node to see what it does.</p><div class="links"><a class="btn" href="#project-${S.proj}">Open project ›</a></div>`;
+    return;
+  }
+  const n = sysNodes().find(n => n.id === id);
+  insp.innerHTML = `<div class="insp-h">[${n.k.toUpperCase()}] <b>${n.t}</b></div>${n.pv ? `<div class="insp-screen">${PV[n.pv]}</div>` : ''}<h2>${n.t}</h2><p class="lead">${n.s}</p><p>${n.info}</p><dl class="specs">${n.sp.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join('')}</dl><div class="links"><button class="btn ghost" type="button" id="inspBack">‹ System overview</button><a class="btn" href="#project-${S.proj}">Open project ›</a></div>`;
+  $('#inspBack').onclick = () => inspect(null);
+}
+function recenter() {
+  const N = sysNodes(), r = graph.getBoundingClientRect();
+  if (!r.width) return;
+  const minX = Math.min(...N.map(n => n.x)), maxX = Math.max(...N.map(n => n.x + NW));
+  const minY = Math.min(...N.map(n => n.y)), maxY = Math.max(...N.map(n => n.y + NH));
+  const padP = 40, z = Math.min(1.15, (r.width - padP * 2) / (maxX - minX), (r.height - padP * 2) / (maxY - minY));
+  view.z = Math.max(r.width < 600 ? 0.3 : 0.6, z);
+  view.x = (r.width - (maxX - minX) * view.z) / 2 - minX * view.z;
+  view.y = (r.height - (maxY - minY) * view.z) / 2 - minY * view.z;
+  applyView();
+}
+function setSys(k) {
+  sysKey = k; sel = null;
+  if (!state[k]) state[k] = SYS[k].nodes.map(n => ({ ...n }));
+  document.querySelectorAll('.sys button').forEach(b => b.setAttribute('aria-selected', String(b.dataset.sys === k)));
+  renderNodes(); inspect(null); recenter();
+}
+function labShow() { if (!labReady) { labReady = true; setSys('edgeexit'); } else recenter(); }
+document.querySelectorAll('.sys button').forEach(b => b.addEventListener('click', () => setSys(b.dataset.sys)));
+$('#recenter').addEventListener('click', recenter);
+let drag = null;
+graph.addEventListener('pointerdown', e => {
+  const nodeEl = e.target.closest('.node');
+  graph.setPointerCapture(e.pointerId);
+  if (nodeEl) { const n = sysNodes().find(n => n.id === nodeEl.dataset.id); drag = { kind: 'node', n, el: nodeEl, sx: e.clientX, sy: e.clientY, ox: n.x, oy: n.y, moved: false }; }
+  else { drag = { kind: 'pan', sx: e.clientX, sy: e.clientY, ox: view.x, oy: view.y, moved: false }; graph.classList.add('panning'); }
+});
+graph.addEventListener('pointermove', e => {
+  if (!drag) return;
+  const dx = e.clientX - drag.sx, dy = e.clientY - drag.sy;
+  if (Math.abs(dx) + Math.abs(dy) > 3) drag.moved = true;
+  if (drag.kind === 'node') { drag.n.x = drag.ox + dx / view.z; drag.n.y = drag.oy + dy / view.z; drag.el.style.left = drag.n.x + 'px'; drag.el.style.top = drag.n.y + 'px'; drawWires(); }
+  else { view.x = drag.ox + dx; view.y = drag.oy + dy; applyView(); }
+});
+const endDrag = () => { if (drag && drag.kind === 'node' && !drag.moved) inspect(drag.n.id); else if (drag && drag.kind === 'pan' && !drag.moved) inspect(null); drag = null; graph.classList.remove('panning'); };
+graph.addEventListener('pointerup', endDrag);
+graph.addEventListener('pointercancel', () => { drag = null; graph.classList.remove('panning'); });
+graph.addEventListener('keydown', e => { const n = e.target.closest('.node'); if (n && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); inspect(n.dataset.id); } });
+graph.addEventListener('wheel', e => {
+  e.preventDefault();
+  const r = graph.getBoundingClientRect(), cx = e.clientX - r.left, cy = e.clientY - r.top;
+  const nz = Math.min(2, Math.max(0.3, view.z * Math.exp(-e.deltaY * 0.0015)));
+  view.x = cx - (cx - view.x) * (nz / view.z); view.y = cy - (cy - view.y) * (nz / view.z); view.z = nz; applyView();
+}, { passive: false });
+addEventListener('resize', () => { if (route && route.page === 'lab') recenter(); });
+
+/* =========================================================
+   ABOUT: CRT monogram
+   ========================================================= */
+const mono = $('#mono'), mctx = mono.getContext('2d');
+let monoRaf = 0;
+const KP = ['#   # ####', '#  #  #   #', '# #   #   #', '##    #### ', '# #   #    ', '#  #  #    ', '#   # #    '];
+function monoFrame(now) {
+  const r = mono.getBoundingClientRect(), dpr = Math.min(2, devicePixelRatio || 1);
+  const W = Math.max(1, Math.round(r.width * dpr)), H = Math.max(1, Math.round(r.height * dpr));
+  if (mono.width !== W || mono.height !== H) { mono.width = W; mono.height = H; }
+  mctx.clearRect(0, 0, W, H);
+  const cols = 11, rows = 7, cell = Math.floor(Math.min(W * 0.78 / cols, H * 0.5 / rows));
+  const ox = (W - cols * cell) / 2, oy = H * 0.36 - (rows * cell) / 2;
+  const t = now / 1000;
+  for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++) {
+    if ((KP[y][x] || ' ') !== '#') continue;
+    const wob = reduce ? 0 : Math.sin(t * 2 + y * 0.9) * cell * 0.08;
+    const glitch = !reduce && Math.random() < 0.004 ? (Math.random() - 0.5) * cell * 2 : 0;
+    mctx.fillStyle = 'rgba(255,107,26,.55)'; mctx.fillRect(ox + x * cell + wob - 2 * dpr + glitch, oy + y * cell, cell - 2 * dpr, cell - 2 * dpr);
+    mctx.fillStyle = '#ecebe4'; mctx.fillRect(ox + x * cell + wob + glitch, oy + y * cell, cell - 2 * dpr, cell - 2 * dpr);
+  }
+  // signal trace
+  mctx.strokeStyle = '#5fd4ff'; mctx.lineWidth = 1.5 * dpr; mctx.beginPath();
+  const base = H * 0.74, amp = H * 0.05;
+  for (let x = 0; x <= W; x += 3 * dpr) { const u = x / W; const y = base + Math.sin(u * 18 - t * 3) * amp * Math.exp(-Math.pow((u - 0.5) * 3, 2)); x ? mctx.lineTo(x, y) : mctx.moveTo(x, y); }
+  mctx.stroke();
+  mctx.fillStyle = '#8d8c86'; mctx.font = `${11 * dpr}px "IBM Plex Mono", monospace`;
+  mctx.fillText('CH 04 · OPERATOR', 14 * dpr, H - 34 * dpr);
+  mctx.fillText('KOLKATA 22.57N 88.36E', 14 * dpr, H - 16 * dpr);
+  monoRaf = reduce ? 0 : requestAnimationFrame(monoFrame);
+}
+function monoStart() { if (!monoRaf) monoRaf = requestAnimationFrame(monoFrame); }
+function monoStop() { if (monoRaf) cancelAnimationFrame(monoRaf); monoRaf = 0; }
+
+/* =========================================================
+   HOME MONITOR: channels
+   ========================================================= */
+const CH = [
+  { name: 'THERMAL', mode: 0, word: 0, hint: 'Move to heat. Hold to ignite.' },
+  { name: 'RADIO', mode: 2, word: 1, hint: 'Drag to orbit the LoRa pattern.' },
+  { name: 'BOARD', mode: 3, word: 2, hint: 'Drag to turn the board.' }
+];
+let ch = 0, mode = 0;
+try { const m = parseInt(localStorage.getItem('kp-ch'), 10); if (m >= 0 && m < CH.length) ch = m; } catch (e) {}
+const canvas = $('#field'), wire = $('#wire'), hero = $('#pg-home');
+const tx = $('#tx'), ty = $('#ty'), tread = $('#tread'), fpsEl = $('#fps'), hint = $('#hint');
+const thesis = $('#thesis'), uline = $('#uline'), staticCv = $('#static'), sctx = staticCv.getContext('2d');
+function setWord(k) {
+  thesis.querySelectorAll('.w').forEach(w => w.classList.toggle('on', +w.dataset.w === k));
+  const el = thesis.querySelector(`.w[data-w="${k}"]`);
+  if (!el || !el.offsetWidth) return;
+  const first = !uline.dataset.ready;
+  if (first) uline.style.transition = 'none';
+  uline.style.width = el.offsetWidth + 'px';
+  uline.style.transform = `translate(${el.offsetLeft}px, ${el.offsetTop + el.offsetHeight * 0.96}px)`;
+  if (first) { void uline.offsetWidth; uline.style.transition = ''; uline.dataset.ready = '1'; }
+}
+function setCh(m) {
+  ch = (m + CH.length) % CH.length; mode = CH[ch].mode;
+  $('#chNum').textContent = pad(ch + 1); $('#chName').textContent = CH[ch].name; hint.textContent = CH[ch].hint;
+  const wf = mode >= 2; wire.hidden = !wf; canvas.hidden = wf;
+  document.querySelectorAll('#pips i').forEach((p, k) => p.classList.toggle('on', k === ch));
+  setWord(CH[ch].word);
+  try { localStorage.setItem('kp-ch', ch); } catch (e) {}
+  kick();
+}
+function runStatic(onMid) {
+  if (reduce) { onMid(); return; }
+  const w = Math.max(1, Math.ceil(hero.clientWidth / 5)), h = Math.max(1, Math.ceil(hero.clientHeight / 5));
+  staticCv.width = w; staticCv.height = h; staticCv.hidden = false;
+  const img = sctx.createImageData(w, h), d = img.data, t0 = performance.now();
+  let switched = false;
+  thesis.classList.remove('glitch'); void thesis.offsetWidth; thesis.classList.add('glitch');
+  const f = now => {
+    const t = now - t0, a = t < 220 ? 1 : Math.max(0, 1 - (t - 220) / 260);
+    for (let i = 0; i < d.length; i += 4) { const v = (Math.random() * 190) | 0; d[i] = d[i + 1] = d[i + 2] = v; d[i + 3] = (255 * a * (0.7 + Math.random() * 0.3)) | 0; }
+    sctx.putImageData(img, 0, 0);
+    for (let k = 0; k < 4; k++) {
+      const y = (Math.random() * h) | 0, bh = 1 + ((Math.random() * 3) | 0);
+      sctx.fillStyle = `rgba(255,60,40,${0.55 * a})`; sctx.fillRect(Math.random() * w * 0.4, y, w * (0.3 + Math.random() * 0.5), bh);
+      sctx.fillStyle = `rgba(60,200,255,${0.55 * a})`; sctx.fillRect(Math.random() * w * 0.4, y + bh, w * (0.2 + Math.random() * 0.4), 1);
+    }
+    if (!switched && t > 180) { switched = true; onMid(); }
+    if (t < 480) requestAnimationFrame(f); else { sctx.clearRect(0, 0, w, h); staticCv.hidden = true; }
+  };
+  requestAnimationFrame(f);
+}
+let chLock = 0;
+function changeCh(dir) {
+  const now = performance.now();
+  if (now < chLock) return;
+  chLock = now + 850;
+  runStatic(() => setCh(ch + dir));
+}
+$('#chUp').onclick = () => changeCh(1);
+$('#chDown').onclick = () => changeCh(-1);
+let wheelAcc = 0, wheelT = 0;
+hero.addEventListener('wheel', e => {
+  if (!route || route.page !== 'home') return;
+  e.preventDefault();
+  wheelAcc += e.deltaY; clearTimeout(wheelT); wheelT = setTimeout(() => wheelAcc = 0, 220);
+  if (Math.abs(wheelAcc) > 40) { changeCh(wheelAcc > 0 ? 1 : -1); wheelAcc = 0; }
+}, { passive: false });
+let tStart = null;
+hero.addEventListener('touchstart', e => { const t = e.touches[0]; tStart = { x: t.clientX, y: t.clientY, t: performance.now() }; }, { passive: true });
+hero.addEventListener('touchend', e => {
+  if (!tStart) return;
+  const t = e.changedTouches[0], dx = t.clientX - tStart.x, dy = t.clientY - tStart.y, dt = performance.now() - tStart.t;
+  if (Math.abs(dy) > 60 && Math.abs(dy) > Math.abs(dx) * 1.3 && dt < 600) changeCh(dy < 0 ? 1 : -1);
+  tStart = null;
+}, { passive: true });
+if (matchMedia('(hover: none)').matches) $('#cueTxt').textContent = 'Swipe to switch';
+addEventListener('resize', () => setWord(CH[ch].word));
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => setWord(CH[ch].word));
+addEventListener('keydown', e => {
+  if (!route || route.page !== 'home' || e.target.closest('input,textarea')) return;
+  if (['ArrowDown', 'ArrowRight', 'PageDown'].includes(e.key)) { e.preventDefault(); changeCh(1); } else if (['ArrowUp', 'ArrowLeft', 'PageUp'].includes(e.key)) { e.preventDefault(); changeCh(-1); }
+});
+
+/* --- WebGL heat field (channels 1–2) --- */
+const gl = canvas.getContext('webgl', { antialias: false, alpha: false, powerPreference: 'low-power' });
+let glOk = false, U = {};
+if (gl) {
+  const vs = 'attribute vec2 p; void main(){ gl_Position = vec4(p, 0.0, 1.0); }';
+  const fs = `
+precision highp float;
+uniform vec2 uRes; uniform float uTime; uniform vec2 uMouse; uniform vec2 uDrag; uniform float uHeat; uniform float uMode;
+vec2 h2(vec2 p){ p = vec2(dot(p, vec2(127.1, 311.7)), dot(p, vec2(269.5, 183.3))); return -1.0 + 2.0 * fract(sin(p) * 43758.5453); }
+float noise(vec2 p){ vec2 i = floor(p), f = fract(p); vec2 u = f * f * (3.0 - 2.0 * f);
+  return mix(mix(dot(h2(i), f), dot(h2(i + vec2(1, 0)), f - vec2(1, 0)), u.x), mix(dot(h2(i + vec2(0, 1)), f - vec2(0, 1)), dot(h2(i + vec2(1, 1)), f - vec2(1, 1)), u.x), u.y); }
+float fbm(vec2 p){ float v = 0.0, a = 0.5; for (int i = 0; i < 4; i++){ v += a * noise(p); p = p * 2.03 + vec2(1.7, 9.2); a *= 0.5; } return v; }
+float field(vec2 uv){
+  float d = length(uv - uMouse); float infl = exp(-d * d * 5.0);
+  uv -= uDrag * infl * 2.2;
+  vec2 p = uv * 1.05; float t = uTime * 0.05;
+  vec2 q = vec2(fbm(p + vec2(0.0, t)), fbm(p + vec2(5.2, 1.3) - t));
+  vec2 r = vec2(fbm(p + 3.0 * q + vec2(1.7, 9.2) + 0.3 * t), fbm(p + 3.0 * q + vec2(8.3, 2.8) - 0.2 * t));
+  float f = fbm(p + 2.6 * r);
+  f += (0.22 + 0.75 * uHeat) * infl;
+  return f;
+}
+vec3 thermal(float x){ x = clamp(x, 0.0, 1.0);
+  vec3 c = mix(vec3(0.0), vec3(0.16, 0.02, 0.32), smoothstep(0.0, 0.22, x));
+  c = mix(c, vec3(0.72, 0.04, 0.30), smoothstep(0.22, 0.45, x));
+  c = mix(c, vec3(1.0, 0.36, 0.04), smoothstep(0.45, 0.66, x));
+  c = mix(c, vec3(1.0, 0.82, 0.22), smoothstep(0.66, 0.85, x));
+  return mix(c, vec3(1.0, 0.98, 0.9), smoothstep(0.85, 1.0, x)); }
+float bands(float v, float n, float w){ float a = abs(fract(v * n) - 0.5); return smoothstep(0.5 - w, 0.5 - w * 0.6, a); }
+void main(){
+  vec2 uv = (gl_FragCoord.xy - 0.5 * uRes) / uRes.y;
+  float off = 0.004 + 0.004 * uHeat;
+  float fr = field(uv + vec2(off, 0.0)), fg = field(uv), fb = field(uv - vec2(off, 0.0));
+  vec3 col;
+  if (uMode < 0.5) {
+    vec3 a = thermal(fr * 0.95 + 0.30), b = thermal(fg * 0.95 + 0.30), c = thermal(fb * 0.95 + 0.30);
+    col = vec3(a.r, b.g, c.b); col *= 0.78 + 0.22 * (1.0 - bands(fg, 9.0, 0.06));
+  } else {
+    float m = bands(fg, 4.0, 0.2);
+    vec3 irid = 0.5 + 0.5 * cos(6.2831 * (vec3(fr, fg, fb) * 2.2 + vec3(0.0, 0.33, 0.67) + uTime * 0.03));
+    col = mix(vec3(0.02), irid, m); col += vec3(1.0) * bands(fg, 4.0, 0.04) * 0.6;
+  }
+  col *= 0.86 + 0.14 * sin(gl_FragCoord.y * 1.9);
+  vec2 q = gl_FragCoord.xy / uRes; col *= 0.55 + 0.45 * pow(16.0 * q.x * q.y * (1.0 - q.x) * (1.0 - q.y), 0.22);
+  gl_FragColor = vec4(col, 1.0);
+}`;
+  try {
+    const sh = (type, src) => { const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s)); return s; };
+    const prog = gl.createProgram();
+    gl.attachShader(prog, sh(gl.VERTEX_SHADER, vs)); gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, fs));
+    gl.linkProgram(prog); gl.useProgram(prog);
+    gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+    const loc = gl.getAttribLocation(prog, 'p'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+    ['uRes', 'uTime', 'uMouse', 'uDrag', 'uHeat', 'uMode'].forEach(n => U[n] = gl.getUniformLocation(prog, n));
+    glOk = true;
+  } catch (e) { console.error(e); }
+}
+
+/* --- wireframe channels (3–4) --- */
+const wctx = wire.getContext('2d');
+function box(x0, z0, x1, z1, y0, h) { // returns 12 edges of an axis-aligned box
+  const P8 = [[x0, y0, z0], [x1, y0, z0], [x1, y0, z1], [x0, y0, z1], [x0, y0 + h, z0], [x1, y0 + h, z0], [x1, y0 + h, z1], [x0, y0 + h, z1]];
+  const E = [[0, 1], [1, 2], [2, 3], [3, 0], [4, 5], [5, 6], [6, 7], [7, 4], [0, 4], [1, 5], [2, 6], [3, 7]];
+  return E.map(([a, b]) => [P8[a], P8[b]]);
+}
+const BOARD = (() => {
+  const L = [];
+  L.push(...box(-42.5, -28, 42.5, 28, 0, 1.6));                 // PCB 85 x 56 mm
+  L.push(...box(-14, -7, 0, 7, 1.6, 1.2));                      // SoC
+  L.push(...box(26, -26, 44, -10, 1.6, 13.5));                  // Ethernet
+  L.push(...box(27, -7, 44, 6, 1.6, 15.6));                     // USB stack
+  L.push(...box(27, 9, 44, 22, 1.6, 15.6));                     // USB stack
+  L.push(...box(2, 14, 5, 26, 1.6, 5));                         // CSI connector
+  L.push(...box(-35, -27, 15, -22, 1.6, 2.5));                  // GPIO header base
+  for (let i = 0; i < 20; i++) for (let j = 0; j < 2; j++) { const x = -34 + i * 2.54, z = -26 + j * 2.54; L.push([[x, 4.1, z], [x, 8.6, z]]); }
+  L.push(...box(-10, 32, 15, 56, 38, 1));                       // camera board (floating)
+  const lens = []; for (let k = 0; k <= 24; k++) { const a = k / 24 * Math.PI * 2; lens.push([2.5 + Math.cos(a) * 4.5, 39.2, 44 + Math.sin(a) * 4.5]); }
+  for (let k = 0; k < 24; k++) L.push([lens[k], lens[k + 1]]);
+  for (let k = 0; k < 4; k++) { const x = 2.4 + k * 0.8; L.push([[x, 6.6, 20], [x, 20, 30], [x, 38, 44]]); } // ribbon (polyline)
+  return L;
+})();
+const BOARD_CALL = [
+  { p: [-7, 2.8, 0], t: 'SOC', v: 'YOLOV11 ON DEVICE', dy: 36 }, { p: [3.5, 6.6, 20], t: 'J3 · CSI', v: 'CAMERA LINK', dy: 70 }, { p: [-10, 8.6, -24.5], t: 'GPIO', v: '40-PIN', dy: -34 },
+  { p: [35, 15.6, 2], t: 'USB', v: '×4', dy: -10 }, { p: [2.5, 39, 50], t: 'CAM', v: 'MODULE', dy: -52 }, { p: [42.5, 0, 28], t: 'PCB', v: '85 × 56 MM', dy: 40 }
+];
+const RADIO = (() => {
+  const pts = [];
+  for (let i = 1; i < 26; i++) { const th = i / 26 * Math.PI; const r = Math.pow(Math.sin(th), 2);
+    for (let j = 0; j < 44; j++) { const ph = j / 44 * Math.PI * 2; pts.push([60 * r * Math.sin(th) * Math.cos(ph), 60 * r * Math.cos(th), 60 * r * Math.sin(th) * Math.sin(ph), r]); } }
+  return pts;
+})();
+const RADIO_CALL = [{ p: [0, 44, 0], t: 'ANTENNA', v: '433 MHZ', dy: -24 }, { p: [60, 0, 0], t: 'MAX GAIN', v: 'BROADSIDE', dy: -14 }, { p: [0, -44, 0], t: 'NULL', v: 'ALONG AXIS', dy: 20 }, { p: [42, 0, 42], t: 'PATTERN', v: 'SIN²Θ', dy: 46 }];
+let yaw = 0.7, pitch = 0.45, yawV = 0, pitchV = 0;
+function project(p, W, H, cx, cy, sc) {
+  const [x, y, z] = p;
+  const cyw = Math.cos(yaw), syw = Math.sin(yaw), cp = Math.cos(pitch), sp = Math.sin(pitch);
+  const x1 = x * cyw - z * syw, z1 = x * syw + z * cyw;
+  const y2 = y * cp - z1 * sp, z2 = y * sp + z1 * cp;
+  const f = 420 / (420 + z2);
+  return [cx + x1 * sc * f, cy - y2 * sc * f, z2, f];
+}
+function callouts(ctx, list, W, H, cx, cy, sc, dpr) {
+  const items = list.map(c => ({ c, s: project(c.p, W, H, cx, cy, sc) })).map(o => ({ ...o, ly: o.s[1] + (o.c.dy || 0) * dpr })).sort((a, b) => a.ly - b.ly);
+  const gap = 34 * dpr;
+  for (let k = 1; k < items.length; k++) if (items[k].ly - items[k - 1].ly < gap) items[k].ly = items[k - 1].ly + gap;
+  const lx = Math.min(W - 150 * dpr, W * 0.86 - 110 * dpr);
+  ctx.font = `${10.5 * dpr}px "IBM Plex Mono", monospace`; ctx.textAlign = 'left'; ctx.lineWidth = 1 * dpr;
+  for (const { c, s, ly } of items) {
+    const x = Math.max(lx, s[0] + 30 * dpr);
+    ctx.strokeStyle = 'rgba(236,235,228,.5)';
+    ctx.beginPath(); ctx.moveTo(s[0], s[1]); ctx.lineTo(x, ly); ctx.lineTo(x + 24 * dpr, ly); ctx.stroke();
+    ctx.fillStyle = '#ff6b1a'; ctx.fillRect(s[0] - 2.5 * dpr, s[1] - 2.5 * dpr, 5 * dpr, 5 * dpr);
+    ctx.fillStyle = '#ecebe4'; ctx.fillText(c.t, x + 30 * dpr, ly + 3.5 * dpr);
+    ctx.fillStyle = '#8d8c86'; ctx.fillText(c.v, x + 30 * dpr, ly + 16 * dpr);
+  }
+}
+function drawWire(now) {
+  const r = wire.getBoundingClientRect(), dpr = Math.min(2, devicePixelRatio || 1);
+  const W = Math.max(1, Math.round(r.width * dpr)), H = Math.max(1, Math.round(r.height * dpr));
+  if (wire.width !== W || wire.height !== H) { wire.width = W; wire.height = H; }
+  const ctx = wctx; ctx.clearRect(0, 0, W, H);
+  // grid
+  ctx.strokeStyle = 'rgba(236,235,228,.05)'; ctx.lineWidth = 1;
+  const g = 64 * dpr; ctx.beginPath(); for (let x = 0; x < W; x += g) { ctx.moveTo(x, 0); ctx.lineTo(x, H); } for (let y = 0; y < H; y += g) { ctx.moveTo(0, y); ctx.lineTo(W, y); } ctx.stroke();
+  const mobile = r.width < 720;
+  const cx = mobile ? W * 0.34 : W * 0.64, cy = mobile ? H * 0.17 : H * 0.34;
+  const sc = Math.min(W, H) / (mobile ? 330 : 205);
+  const t = now / 1000;
+  if (mode === 3) {
+    ctx.strokeStyle = 'rgba(236,235,228,.85)'; ctx.lineWidth = 1 * dpr; ctx.beginPath();
+    for (const seg of BOARD) { for (let k = 0; k < seg.length - 1; k++) { const a = project(seg[k], W, H, cx, cy, sc), b = project(seg[k + 1], W, H, cx, cy, sc); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); } }
+    ctx.stroke();
+    // scan plane across the board
+    const sx = -42.5 + ((t * 18) % 85);
+    const s1 = project([sx, 2, -28], W, H, cx, cy, sc), s2 = project([sx, 2, 28], W, H, cx, cy, sc);
+    ctx.strokeStyle = '#ff6b1a'; ctx.lineWidth = 2 * dpr; ctx.beginPath(); ctx.moveTo(s1[0], s1[1]); ctx.lineTo(s2[0], s2[1]); ctx.stroke();
+    callouts(ctx, BOARD_CALL, W, H, cx, cy, sc, dpr);
+  } else {
+    // antenna + ground ring
+    const a1 = project([0, -44, 0], W, H, cx, cy, sc), a2 = project([0, 44, 0], W, H, cx, cy, sc);
+    ctx.strokeStyle = '#ff6b1a'; ctx.lineWidth = 2 * dpr; ctx.beginPath(); ctx.moveTo(a1[0], a1[1]); ctx.lineTo(a2[0], a2[1]); ctx.stroke();
+    ctx.strokeStyle = 'rgba(236,235,228,.25)'; ctx.lineWidth = 1 * dpr; ctx.beginPath();
+    for (let k = 0; k <= 64; k++) { const a = k / 64 * Math.PI * 2; const q = project([Math.cos(a) * 72, 0, Math.sin(a) * 72], W, H, cx, cy, sc); k ? ctx.lineTo(q[0], q[1]) : ctx.moveTo(q[0], q[1]); }
+    ctx.stroke();
+    const pr = RADIO.map(p => { const q = project(p, W, H, cx, cy, sc); return [q[0], q[1], q[2], q[3], p[3]]; }).sort((a, b) => b[2] - a[2]);
+    for (const [x, y, z, f, rr] of pr) {
+      const wave = 0.5 + 0.5 * Math.sin(rr * 9 - t * 4);
+      const s = (1.6 + 2.6 * f * rr) * dpr;
+      ctx.fillStyle = rr > 0.88 && wave > 0.6 ? '#ff6b1a' : `rgba(236,235,228,${(0.25 + 0.65 * wave * f).toFixed(3)})`;
+      ctx.fillRect(x - s / 2, y - s / 2, s, s);
+    }
+    callouts(ctx, RADIO_CALL, W, H, cx, cy, sc, dpr);
+  }
+}
+
+/* --- pointer + loop --- */
+const target = { x: 0.35, y: 0.05 }, m = { x: 0.35, y: 0.05 }, dragV = { x: 0, y: 0 };
+let heat = 0, holding = false, lastMove = 0, lastPX = null;
+const toField = e => { const r = hero.getBoundingClientRect(); return { x: (e.clientX - r.left - r.width / 2) / r.height, y: -(e.clientY - r.top - r.height / 2) / r.height }; };
+hero.addEventListener('pointermove', e => {
+  const p = toField(e);
+  dragV.x += (p.x - target.x) * 0.6; dragV.y += (p.y - target.y) * 0.6;
+  target.x = p.x; target.y = p.y; lastMove = performance.now();
+  if (holding && mode >= 2 && lastPX) { yawV = (e.clientX - lastPX.x) * 0.006; pitchV = (e.clientY - lastPX.y) * 0.004; }
+  lastPX = { x: e.clientX, y: e.clientY };
+  kick();
+});
+hero.addEventListener('pointerdown', e => { if (e.target.closest('a,button')) return; holding = true; lastPX = { x: e.clientX, y: e.clientY }; if (mode === 0) heat = Math.min(1.4, heat + 0.5); kick(); });
+addEventListener('pointerup', () => holding = false);
+addEventListener('pointercancel', () => holding = false);
+
+let visible = true, raf = 0, last = performance.now(), frames = 0, fpsT = last;
+const start = last;
+new IntersectionObserver(([en]) => { visible = en.isIntersecting; if (visible) kick(); }).observe(hero);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) kick(); });
+function frame(now) {
+  raf = 0;
+  if (!visible || document.hidden || hero.hidden) return;
+  const dt = Math.min(0.05, (now - last) / 1000); last = now;
+  if (now - lastMove > 2500) { const t = now / 1000; target.x = 0.38 + 0.22 * Math.cos(t * 0.35); target.y = 0.06 + 0.16 * Math.sin(t * 0.5); }
+  m.x += (target.x - m.x) * 0.12; m.y += (target.y - m.y) * 0.12;
+  dragV.x *= 0.9; dragV.y *= 0.9;
+  heat = holding && mode === 0 ? Math.min(1.4, heat + dt * 1.2) : Math.max(0, heat - dt * 0.7);
+  if (mode < 2 && glOk) {
+    const w = Math.max(1, Math.round(canvas.clientWidth * 0.55)), h = Math.max(1, Math.round(canvas.clientHeight * 0.55));
+    if (canvas.width !== w || canvas.height !== h) { canvas.width = w; canvas.height = h; gl.viewport(0, 0, w, h); }
+    gl.uniform2f(U.uRes, w, h); gl.uniform1f(U.uTime, reduce ? 20 : (now - start) / 1000);
+    gl.uniform2f(U.uMouse, m.x, m.y);
+    gl.uniform2f(U.uDrag, Math.max(-.3, Math.min(.3, dragV.x)), Math.max(-.3, Math.min(.3, dragV.y)));
+    gl.uniform1f(U.uHeat, heat); gl.uniform1f(U.uMode, mode);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+  } else if (mode >= 2) {
+    if (!holding) { yawV += ((reduce ? 0 : 0.0035) - yawV) * 0.04; pitchV *= 0.9; }
+    yaw += yawV; pitch = Math.max(-0.2, Math.min(1.25, pitch + pitchV));
+    drawWire(now);
+  }
+  frames++;
+  if (now - fpsT > 250) {
+    tx.textContent = (mode >= 2 ? yaw % (Math.PI * 2) : m.x).toFixed(3); ty.textContent = (mode >= 2 ? pitch : m.y).toFixed(3);
+    if (mode === 0) tread.innerHTML = `temp <b>${(24 + heat * 310 + Math.sin(now / 300) * 0.4).toFixed(1)}</b> °C (sim)`;
+    else if (mode === 1) tread.innerHTML = `bands <b>04</b>`;
+    else if (mode === 2) tread.innerHTML = `f <b>433</b> MHz`;
+    else tread.innerHTML = `pcb <b>85 × 56</b> mm`;
+    fpsEl.textContent = Math.round(frames * 1000 / (now - fpsT)); frames = 0; fpsT = now;
+  }
+  if (!reduce || holding || heat > 0) kick();
+}
+function kick() { if (!raf) raf = requestAnimationFrame(frame); }
+if (!glOk && CH[ch].mode < 2) ch = 1;
+setCh(ch);
+
+/* =========================================================
+   START
+   ========================================================= */
+go();
+})();
+</script>
